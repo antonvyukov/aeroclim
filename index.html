@@ -182,10 +182,10 @@
     }
 
     .cat-label-glass {
-      background: rgba(26, 111, 181, 0.82);
+      background: rgba(26, 111, 181, 0.72);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(18, 24, 31, 0.18);
+      box-shadow: 0 4px 12px rgba(18, 24, 31, 0.16);
     }
   </style>
 </head>
@@ -346,7 +346,7 @@
           >
             <img :src="cat.img" :alt="cat.title" class="media-zoom h-full w-full object-cover" />
             <span
-              class="cat-label-glass absolute bottom-3 left-3 inline-block rounded-lg border border-white/20 px-item py-tight text-sm font-medium text-white sm:text-base"
+              class="cat-label-glass absolute bottom-3 left-3 inline-block rounded-full border border-white/20 px-item py-tight text-sm font-medium text-white sm:text-base"
               x-text="cat.title"
             ></span>
           </a>
