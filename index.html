@@ -205,7 +205,7 @@
     <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-item py-item">
       <a href="#" class="flex items-baseline gap-tight">
         <span class="font-display text-2xl font-semibold tracking-display text-ink">AeroClim</span>
-        <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климат</span>
+        <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климатическая техника</span>
       </a>
 
       <nav class="hidden items-center gap-card text-sm font-medium text-mist md:flex">
@@ -287,7 +287,7 @@
       </div>
 
       <div class="page-x relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center py-section sm:min-h-[72vh]">
-        <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">AeroClim · климат</p>
+        <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">AeroClim · климат уюта</p>
         <h1 class="fade-up fade-up-delay mt-item max-w-xl font-display text-4xl font-semibold text-ink sm:text-6xl">
           Свежий климат — каждый день
         </h1>
@@ -308,23 +308,19 @@
             Выбрать тип
           </a>
         </div>
-      </div>
-    </section>
-
-    <!-- Quick filters -->
-    <section class="surface-elevated border-b border-line bg-white">
-      <div class="page-x mx-auto flex max-w-6xl gap-tight overflow-x-auto py-item">
-        <template x-for="chip in quickFilters" :key="chip.id">
-          <button
-            type="button"
-            class="chip shrink-0 rounded-full px-item py-tight text-sm"
-            :class="activeQuick === chip.id
-              ? 'is-on bg-ink text-white'
-              : 'bg-paper text-mist'"
-            @click="applyQuick(chip)"
-            x-text="chip.label"
-          ></button>
-        </template>
+        <div class="fade-up fade-up-delay-2 mt-card flex max-w-xl flex-wrap gap-tight">
+          <template x-for="chip in quickFilters" :key="chip.id">
+            <button
+              type="button"
+              class="chip shrink-0 rounded-full px-item py-tight text-sm backdrop-blur-sm"
+              :class="activeQuick === chip.id
+                ? 'is-on bg-ink text-white'
+                : 'bg-white/70 text-mist'"
+              @click="applyQuick(chip)"
+              x-text="chip.label"
+            ></button>
+          </template>
+        </div>
       </div>
     </section>
 
@@ -338,13 +334,13 @@
         <template x-for="cat in categories" :key="cat.title">
           <a
             href="#catalog"
-            class="group relative z-[10] aspect-[4/3] overflow-hidden rounded-2xl shadow-elevated"
-            @click="filterBrand = ''; filterArea = ''; filterInverter = ''; activeQuick = 'all'"
+            class="group relative z-[10] aspect-[4/3] overflow-hidden rounded-2xl"
+            @click="filterBrand = ''; filterModel = ''; filterArea = ''; filterInverter = ''; activeQuick = 'all'"
           >
             <img :src="cat.img" :alt="cat.title" class="media-zoom h-full w-full object-cover" />
             <div
               class="absolute inset-0"
-              style="background: radial-gradient(120% 80% at 50% 100%, rgba(19,32,38,0.78), transparent 70%);"
+              style="background: linear-gradient(to top, rgba(18,24,31,0.72) 0%, rgba(18,24,31,0.18) 38%, transparent 62%);"
             ></div>
             <span class="absolute bottom-3 left-3 right-3 text-sm font-medium text-white sm:text-base" x-text="cat.title"></span>
           </a>
@@ -358,7 +354,7 @@
         <div class="mb-block flex flex-col gap-item sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="font-display text-3xl font-semibold sm:text-4xl">Популярные модели</h2>
-            <p class="mt-item text-mist">Фильтруйте по бренду, площади и типу компрессора.</p>
+            <p class="mt-item text-mist">Фильтруйте по бренду, модели, площади и типу компрессора.</p>
           </div>
           <p class="text-sm text-mist">
             Найдено: <span class="font-medium text-ink" x-text="filteredProducts.length"></span>
@@ -375,18 +371,46 @@
                   type="button"
                   class="chip rounded-full px-item py-tight text-sm"
                   :class="filterBrand === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
-                  @click="filterBrand = ''"
+                  @click="setBrand('')"
                 >Все</button>
                 <template x-for="b in brands" :key="b">
                   <button
                     type="button"
                     class="chip rounded-full px-item py-tight text-sm"
                     :class="filterBrand === b ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
-                    @click="filterBrand = b"
+                    @click="setBrand(b)"
                     x-text="b"
                   ></button>
                 </template>
               </div>
+            </div>
+
+            <div x-show="filterBrand" x-cloak>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Модель</p>
+              <div class="flex flex-wrap gap-tight">
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterModel === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterModel = ''"
+                >Все модели</button>
+                <template x-for="m in visibleBrandModels" :key="m">
+                  <button
+                    type="button"
+                    class="chip max-w-full rounded-full px-item py-tight text-left text-xs sm:text-sm"
+                    :class="filterModel === m ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                    @click="filterModel = m"
+                    x-text="m"
+                  ></button>
+                </template>
+              </div>
+              <button
+                type="button"
+                class="mt-tight text-sm text-sky"
+                x-show="brandModels.length > modelTagsLimit"
+                @click="modelListExpanded = !modelListExpanded"
+                x-text="modelListExpanded ? 'Свернуть список' : 'Ещё ' + (brandModels.length - modelTagsLimit) + ' моделей'"
+              ></button>
             </div>
 
             <div>
@@ -447,10 +471,10 @@
           <div>
             <div class="grid gap-item sm:grid-cols-2 xl:grid-cols-3">
               <template x-for="p in filteredProducts" :key="p.id">
-                <article class="card-lift surface-elevated group flex flex-col overflow-hidden rounded-2xl border border-line bg-white">
-                  <div class="relative aspect-square overflow-hidden bg-paper">
+                <article class="card-lift group flex flex-col overflow-hidden rounded-2xl bg-white">
+                  <div class="relative aspect-[3/2] overflow-hidden bg-white">
                     <button type="button" class="h-full w-full" @click="openQuick(p)">
-                      <img :src="p.img" :alt="p.name" class="media-zoom h-full w-full object-contain p-card" loading="lazy" />
+                      <img :src="p.img" :alt="p.name" class="media-zoom h-full w-full object-contain px-item py-tight" loading="lazy" />
                     </button>
                     <span
                       x-show="p.inverter"
@@ -458,14 +482,14 @@
                     >Инвертор</span>
                     <button
                       type="button"
-                      class="btn absolute right-3 top-3 z-[10] inline-flex items-center gap-1.5 rounded-full bg-white/90 px-tight py-1.5 text-xs font-medium text-ink shadow-elevated backdrop-blur-sm"
+                      class="btn absolute right-3 top-3 z-[10] inline-flex items-center gap-1.5 rounded-full bg-white/90 px-tight py-1.5 text-xs font-medium text-ink backdrop-blur-sm"
                       @click="openQuick(p)"
                     >
                       <iconify-icon icon="solar:eye-bold-duotone" class="text-sky" width="16" height="16"></iconify-icon>
                       <span class="hidden sm:inline">Обзор</span>
                     </button>
                   </div>
-                  <div class="flex flex-1 flex-col p-card">
+                  <div class="flex flex-1 flex-col bg-paper p-card">
                     <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="p.brand"></p>
                     <button type="button" class="mt-tight text-left" @click="openQuick(p)">
                       <h3 class="text-base font-medium leading-snug" x-text="p.name"></h3>
@@ -504,11 +528,11 @@
       </div>
 
       <div class="grid grid-cols-1 gap-item md:grid-cols-12 md:grid-rows-[auto_auto_auto]">
-        <article class="surface-elevated relative overflow-hidden rounded-[1.6rem] bg-sky p-card text-white md:col-span-5 md:row-span-2 md:p-block">
+        <article class="relative overflow-hidden rounded-[1.6rem] bg-sky p-card text-white md:col-span-5 md:row-span-2 md:p-block">
           <div class="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10"></div>
-          <div class="relative flex h-full min-h-[240px] flex-col justify-between">
-            <iconify-icon icon="solar:shield-check-bold-duotone" width="36" height="36"></iconify-icon>
-            <div class="mt-block">
+          <div class="relative flex h-full min-h-[240px] flex-col items-start">
+            <iconify-icon icon="solar:shield-check-bold-duotone" class="block shrink-0" width="36" height="36"></iconify-icon>
+            <div class="mt-block w-full">
               <p class="font-display text-5xl font-semibold tracking-display sm:text-6xl">36 мес.</p>
               <h3 class="mt-item text-xl font-medium">Гарантия на работы</h3>
               <p class="mt-tight max-w-xs text-sm text-white/80">Бесплатный выезд мастера в гарантийный период — чиним сами, не перекладываем.</p>
@@ -516,7 +540,7 @@
           </div>
         </article>
 
-        <article class="surface-elevated rounded-[1.6rem] bg-frost p-card md:col-span-7 md:p-block">
+        <article class="rounded-[1.6rem] bg-frost p-card md:col-span-7 md:p-block">
           <div class="flex items-start justify-between gap-item">
             <iconify-icon icon="solar:delivery-bold-duotone" class="text-sky" width="32" height="32"></iconify-icon>
             <p class="font-display text-4xl font-semibold tracking-display text-sky">0 ₽</p>
@@ -525,21 +549,21 @@
           <p class="mt-tight text-sm text-mist">Бесплатно при заказе установки в Москве и области. Привезём и поставим в один день.</p>
         </article>
 
-        <article class="surface-elevated rounded-[1.6rem] border border-line bg-white p-card md:col-span-4">
+        <article class="rounded-[1.6rem] bg-white p-card md:col-span-4">
           <iconify-icon icon="solar:sale-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
           <p class="mt-block font-display text-3xl font-semibold tracking-display text-ink">−10%</p>
           <h3 class="mt-tight text-lg font-medium">Лучшая цена</h3>
           <p class="mt-tight text-sm text-mist">Нашли дешевле — вернём 10% от разницы.</p>
         </article>
 
-        <article class="surface-elevated rounded-[1.6rem] border border-line bg-white p-card md:col-span-3">
+        <article class="rounded-[1.6rem] bg-white p-card md:col-span-3">
           <iconify-icon icon="solar:city-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
           <p class="mt-block font-display text-3xl font-semibold tracking-display text-ink">50+</p>
           <h3 class="mt-tight text-lg font-medium">Городов</h3>
           <p class="mt-tight text-sm text-mist">Бригады по Москве и МО.</p>
         </article>
 
-        <article class="surface-elevated rounded-[1.6rem] border border-line bg-white p-card md:col-span-6">
+        <article class="rounded-[1.6rem] bg-white p-card md:col-span-6">
           <div class="flex items-center gap-item">
             <iconify-icon icon="solar:medal-ribbons-star-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
             <p class="font-display text-3xl font-semibold tracking-display">28</p>
@@ -548,7 +572,7 @@
           <p class="mt-tight text-sm text-mist">Дилерские поставки без наценки «за имя» — от Casarte до Mitsubishi.</p>
         </article>
 
-        <article class="surface-elevated rounded-[1.6rem] bg-frost p-card md:col-span-6">
+        <article class="rounded-[1.6rem] bg-frost p-card md:col-span-6">
           <div class="flex items-center gap-item">
             <iconify-icon icon="solar:card-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
             <p class="font-display text-3xl font-semibold tracking-display">0%</p>
@@ -569,7 +593,7 @@
             <button
               type="button"
               class="chip rounded-full border border-line bg-paper px-item py-tight text-sm text-mist"
-              @click="filterBrand = b; filterArea = ''; filterInverter = ''; activeQuick = 'all'; document.getElementById('catalog').scrollIntoView()"
+              @click="setBrand(b); filterArea = ''; filterInverter = ''; activeQuick = 'all'; document.getElementById('catalog').scrollIntoView()"
               x-text="b"
             ></button>
           </template>
@@ -592,7 +616,7 @@
             <li class="flex gap-item"><span class="text-sky">—</span> Бесплатная доставка при заказе монтажа в МО</li>
           </ul>
         </div>
-        <div class="surface-elevated relative aspect-[5/4] overflow-hidden rounded-3xl">
+        <div class="relative aspect-[5/4] overflow-hidden rounded-3xl">
           <img
             src="https://carata.ru/upload/resize_cache/iblock/206/snympy68eqahtihse5191y2nfugyfb3l/371_230_1/nastennye_kondicionery.jpg"
             alt="Настенный кондиционер"
@@ -832,9 +856,12 @@
         checkoutStep: 1,
         toast: '',
         filterBrand: '',
+        filterModel: '',
         filterArea: '',
         filterInverter: '',
         activeQuick: 'all',
+        modelListExpanded: false,
+        modelTagsLimit: 6,
         order: { name: '', phone: '', address: '', install: true },
         cart: [],
 
@@ -859,64 +886,190 @@
         ],
 
         allBrands: [
-          'Casarte', 'Ballu', 'Gree', 'Haier', 'LG', 'Samsung',
+          'Ecoclima', 'AUX', 'Casarte', 'Ballu', 'Gree', 'Haier', 'LG', 'Samsung',
           'Mitsubishi Electric', 'Panasonic', 'Toshiba', 'Electrolux',
           'Royal Clima', 'Dahatsu', 'Hisense', 'Funai',
         ],
 
         products: [
           {
-            id: 1, brand: 'Casarte', name: 'Casarte СAS25MW1/R3-B',
-            price: 98000, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '19 дБ', energy: 'A+++', refrigerant: 'R32', color: 'Чёрный',
-            img: img('/upload/resize_cache/iblock/287/mttd3qlkxyhcrcqobeydsstr1yay7veu/267_267_1/casarte_sas25mw1_r3_b_1u25mw1_r3.jpg'),
+            id: 1, brand: 'Ecoclima', name: 'Ecoclima ECW-HE07/BB-4R2',
+            price: 19900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
           },
           {
-            id: 2, brand: 'Denko', name: 'Denko DU-07',
-            price: 24000, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '26 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/4f0/tv9clnmfjwtdrbb3536g51akid89556e/267_267_1/denko_du_07.jpg'),
+            id: 2, brand: 'Ecoclima', name: 'Ecoclima ECW-CH09/AA-4R1',
+            price: 19900, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
           },
           {
-            id: 3, brand: 'Dahatsu', name: 'Dahatsu DA-07H',
-            price: 26800, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.3 кВт',
-            noise: '25 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/de2/2veglem5plp6dxo39zehqipw168jtwhn/267_267_1/dahatsu_da_07h.jpg'),
+            id: 3, brand: 'Ecoclima', name: 'Ecoclima ECW-HE09/BB-4R2',
+            price: 22100, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
           },
           {
-            id: 4, brand: 'Ballu', name: 'Ballu BSVI-07HN8',
-            price: 29250, area: 20, inverter: true, cooling: '2.2 кВт', heat: '2.3 кВт',
+            id: 4, brand: 'Ecoclima', name: 'Ecoclima ECW/I-AX07/FB-4R1',
+            price: 23900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/86a/kvjca0oa7mjtwvxv9hbeuvb1xildyiuv/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ax07_fb_4r1_20m.jpg'),
+          },
+          {
+            id: 5, brand: 'Ecoclima', name: 'Ecoclima ECW/I-CH07/AA-4R1 (White)',
+            price: 23900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
+          },
+          {
+            id: 6, brand: 'Ecoclima', name: 'Ecoclima ECW/I-07QCW',
+            price: 24700, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/384/eyv0yi5u67zw94qzyo0ksh621fpwiwhc/267_267_1/nastennyy_vnutrenniy_blok_multi_split_sistemy_ecoclima_cmwm_h09_4r2_white_25m.jpg'),
+          },
+          {
+            id: 7, brand: 'Ecoclima', name: 'Ecoclima ECW-CH12/AA-4R1',
+            price: 27700, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
+          },
+          {
+            id: 8, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE07/AA-4R2',
+            price: 27900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/4ec/drqt92l7b822qjlokfouzq9i5ohmpq0i/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_aa_4r2_20m.jpg'),
+          },
+          {
+            id: 9, brand: 'Ecoclima', name: 'Ecoclima ECW/I-CH09/AA-4R1 (White)',
+            price: 27900, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
             noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/c0a/5ct00i95o4f97a9tql2liokrzyomotar/267_267_1/ballu_bsvi_07hn8.jpg'),
+            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
           },
           {
-            id: 5, brand: 'Gree', name: 'Gree PULAR Inverter Eco',
-            price: 60000, area: 27, inverter: true, cooling: '2.7 кВт', heat: '2.9 кВт',
-            noise: '20 дБ', energy: 'A+++', refrigerant: 'R32', color: 'Графит',
+            id: 10, brand: 'Ecoclima', name: 'Ecoclima ECW-TC09/AA-4R1',
+            price: 22400, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/b72/09xnrt96it4t8wo5it3m1mortsn4nv5d/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_tc09_aa_4r2_25m.jpg'),
+          },
+          {
+            id: 11, brand: 'Ecoclima', name: 'Ecoclima ECW-HE12/AA-4R2',
+            price: 28200, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/4ec/drqt92l7b822qjlokfouzq9i5ohmpq0i/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_aa_4r2_20m.jpg'),
+          },
+          {
+            id: 12, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE07/BB-4R2',
+            price: 28700, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
+          },
+          {
+            id: 13, brand: 'Ecoclima', name: 'Ecoclima ECW/I-AX12/FB-4R1',
+            price: 29400, area: 35, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/86a/kvjca0oa7mjtwvxv9hbeuvb1xildyiuv/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ax07_fb_4r1_20m.jpg'),
+          },
+          {
+            id: 14, brand: 'Ecoclima', name: 'Ecoclima ECW-TC12/AA-4R1',
+            price: 30900, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/b72/09xnrt96it4t8wo5it3m1mortsn4nv5d/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_tc09_aa_4r2_25m.jpg'),
+          },
+          {
+            id: 15, brand: 'Ecoclima', name: 'Ecoclima ECW-HE12/BB-4R2',
+            price: 30900, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
+          },
+          {
+            id: 16, brand: 'Electrolux', name: 'Electrolux EACS-07HP/N3_23Y_in',
+            price: 29549, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/bc3/0f6z80a9ca8qf46fkqm5ou6clrc6w20v/267_267_1/nastennyy_konditsioner_electrolux_eacs_07hp_n3_23y_in_20m.jpg'),
+          },
+          {
+            id: 17, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE09/BB-4R2',
+            price: 31700, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
+          },
+          {
+            id: 18, brand: 'Ecoclima', name: 'Ecoclima ECW/I-CH12/AA-4R1 (White)',
+            price: 32900, area: 35, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
+          },
+          {
+            id: 19, brand: 'Electrolux', name: 'Electrolux EACS-09HP/N3_23Y_in',
+            price: 31989, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/bc3/0f6z80a9ca8qf46fkqm5ou6clrc6w20v/267_267_1/nastennyy_konditsioner_electrolux_eacs_07hp_n3_23y_in_20m.jpg'),
+          },
+          {
+            id: 20, brand: 'AUX', name: 'AUX ASW-H09A4/FJ-BR1',
+            price: 27600, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/79e/34ykp22pp29amllqa6s1os7bzh9vfzp6/267_267_1/nastennyy_konditsioner_aux_asw_h07b4_fj_br1_20m.jpg'),
+          },
+          {
+            id: 21, brand: 'Ecoclima', name: 'Ecoclima ECW/I-TC09/AA-4R2',
+            price: 34900, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/b72/09xnrt96it4t8wo5it3m1mortsn4nv5d/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_tc09_aa_4r2_25m.jpg'),
+          },
+          {
+            id: 22, brand: 'AUX', name: 'AUX ASW-H07A4/CB-R2DI',
+            price: 29900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/1e9/wh8bk9nlh2ckdbh80onnayowna2sqqhc/267_267_1/nastennyy_konditsioner_aux_asw_h07a4_cb_r2di_20m.jpg'),
+          },
+          {
+            id: 23, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE12/BB-4R2',
+            price: 36900, area: 35, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '23 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
+          },
+          {
+            id: 24, brand: 'AUX', name: 'AUX ASW-H09A4/CB-R2DI',
+            price: 31900, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/1e9/wh8bk9nlh2ckdbh80onnayowna2sqqhc/267_267_1/nastennyy_konditsioner_aux_asw_h07a4_cb_r2di_20m.jpg'),
+          },
+          {
+            id: 25, brand: 'Gree', name: 'Gree PULAR Inverter Eco GWH07AGAXA-K6DNA4E',
+            price: 60000, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Графит',
             img: img('/upload/resize_cache/iblock/a13/bj46es0n4q8ldaduo0jnr8xe2ax5njg1/267_267_1/nastennaya_split_sistema_gree_pular_inverter_matte_gwh09agaxa_k6dna1d.jpeg'),
           },
           {
-            id: 6, brand: 'Thaicon', name: 'Thaicon TL-RWB20-VR',
+            id: 26, brand: 'Thaicon', name: 'Thaicon TL-RWB20-VR / TL-ROB20-VR',
             price: 32500, area: 36, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
             noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
             img: img('/upload/resize_cache/iblock/0a6/vby4q701vccf9zcr24d17ehd7dxjle6v/267_267_1/thaicon_tl_rwb100_na_tl_rob100_na.jpg'),
           },
           {
-            id: 7, brand: 'Rovex', name: 'Rovex RS-07CBS4 Megapolis',
-            price: 22900, area: 20, inverter: false, cooling: '2.0 кВт', heat: '2.1 кВт',
-            noise: '27 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            id: 27, brand: 'Rovex', name: 'Rovex RS-07CBS4 Megapolis',
+            price: 22900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
             img: img('/upload/resize_cache/iblock/d15/p0nsvp9hmbyfnpje5o2jq3vd8tnmcg7t/267_267_1/rovex_rs_07cbs4_megapolis.jpg'),
           },
           {
-            id: 8, brand: 'Rovex', name: 'Rovex RS-07MUIN1 Rich',
-            price: 27900, area: 20, inverter: true, cooling: '2.2 кВт', heat: '2.4 кВт',
+            id: 28, brand: 'Rovex', name: 'Rovex RS-07MUIN1 Rich',
+            price: 27900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
             noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
             img: img('/upload/resize_cache/iblock/13e/9zpcha149br1hr1k655xadmsqhn77biz/267_267_1/rovex_rs_07muin1_rich.jpg'),
           },
           {
-            id: 9, brand: 'Rovex', name: 'Rovex ABS-07HE STAR N',
-            price: 22900, area: 23, inverter: false, cooling: '2.3 кВт', heat: '2.4 кВт',
-            noise: '26 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            id: 29, brand: 'Rovex', name: 'Rovex ABS-07HE STAR N',
+            price: 22900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/463/1a16kresu9dwkfz6jcqs7jjj2iondak6/267_267_1/rovex_ast_09he_mira_n.jpg'),
+          },
+          {
+            id: 30, brand: 'Rovex', name: 'Rovex ABS-07HE STAR S',
+            price: 23900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
             img: img('/upload/resize_cache/iblock/463/1a16kresu9dwkfz6jcqs7jjj2iondak6/267_267_1/rovex_ast_09he_mira_n.jpg'),
           },
         ],
@@ -924,12 +1077,26 @@
         get brands() {
           return [...new Set(this.products.map((p) => p.brand))];
         },
+        get brandModels() {
+          if (!this.filterBrand) return [];
+          return [...new Set(this.products.filter((p) => p.brand === this.filterBrand).map((p) => p.name))];
+        },
+        get visibleBrandModels() {
+          const all = this.brandModels;
+          if (this.modelListExpanded || all.length <= this.modelTagsLimit) return all;
+          const visible = all.slice(0, this.modelTagsLimit);
+          if (this.filterModel && !visible.includes(this.filterModel)) {
+            return [...visible, this.filterModel];
+          }
+          return visible;
+        },
         get areas() {
           return [23, 27, 36];
         },
         get filteredProducts() {
           return this.products.filter((p) => {
             if (this.filterBrand && p.brand !== this.filterBrand) return false;
+            if (this.filterModel && p.name !== this.filterModel) return false;
             if (this.filterArea && p.area > Number(this.filterArea)) return false;
             if (this.filterInverter === 'yes' && !p.inverter) return false;
             if (this.filterInverter === 'no' && p.inverter) return false;
@@ -966,18 +1133,26 @@
         closeQuick() {
           this.quickView = null;
         },
+        setBrand(b) {
+          this.filterBrand = b;
+          this.filterModel = '';
+          this.modelListExpanded = false;
+        },
         applyQuick(chip) {
           this.activeQuick = chip.id;
           this.filterBrand = chip.brand;
+          this.filterModel = '';
           this.filterArea = chip.area || '';
           this.filterInverter = chip.inverter;
           document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
         },
         resetFilters() {
           this.filterBrand = '';
+          this.filterModel = '';
           this.filterArea = '';
           this.filterInverter = '';
           this.activeQuick = 'all';
+          this.modelListExpanded = false;
         },
         addToCart(p) {
           const existing = this.cart.find((i) => i.id === p.id);
