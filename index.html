@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AeroClim — кондиционеры и сплит-системы</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Outfit', 'system-ui', 'sans-serif'],
+            display: ['"Source Serif 4"', 'Georgia', 'serif'],
+          },
+          colors: {
+            ink: '#12181f',
+            mist: '#5c6874',
+            paper: '#f4f7fb',
+            line: '#d5dde6',
+            frost: '#e6eef6',
+            sky: {
+              DEFAULT: '#1a6fb5',
+              dark: '#145a94',
+              soft: '#dceaf7',
+            },
+          },
+          spacing: {
+            tight: '8px',
+            item: '16px',
+            card: '24px',
+            block: '40px',
+            section: '80px',
+          },
+          letterSpacing: {
+            display: '-0.03em',
+          },
+          lineHeight: {
+            body: '1.7',
+          },
+          boxShadow: {
+            elevated: '0 1px 1px rgba(26,111,181,0.06), 0 8px 24px rgba(18,24,31,0.06)',
+            floating: '0 2px 4px rgba(26,111,181,0.08), 0 18px 40px rgba(18,24,31,0.12), 0 40px 72px rgba(26,111,181,0.10)',
+          },
+          transitionTimingFunction: {
+            spring: 'cubic-bezier(0.22, 1.2, 0.36, 1)',
+          },
+        },
+      },
+    };
+  </script>
+  <style>
+    :root {
+      --brand: #1a6fb5;
+      --brand-rgb: 26, 111, 181;
+      --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+      --space-tight: 8px;
+      --space-item: 16px;
+      --space-card: 24px;
+      --space-block: 40px;
+      --space-section: 80px;
+      --z-base: 0;
+      --z-elevated: 10;
+      --z-floating: 40;
+      --z-overlay: 50;
+      --z-grain: 90;
+    }
+    [x-cloak] { display: none !important; }
+    iconify-icon { display: inline-block; vertical-align: middle; }
+    html { scroll-behavior: smooth; }
+    body {
+      color: #12181f;
+      line-height: 1.7;
+      background:
+        radial-gradient(1100px 520px at 8% -12%, rgba(26, 111, 181, 0.16), transparent 58%),
+        radial-gradient(820px 460px at 100% 0%, rgba(110, 170, 225, 0.14), transparent 52%),
+        radial-gradient(720px 400px at 70% 108%, rgba(26, 111, 181, 0.08), transparent 55%),
+        #f4f7fb;
+    }
+    h1, h2 {
+      letter-spacing: -0.03em;
+      line-height: 1.12;
+    }
+    .page-x { padding-inline: var(--space-item); }
+    @media (min-width: 640px) { .page-x { padding-inline: var(--space-card); } }
+    .section-y { padding-block: 64px; }
+    @media (min-width: 640px) { .section-y { padding-block: var(--space-section); } }
+
+    .grain {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: var(--z-grain);
+      opacity: 0.045;
+      mix-blend-mode: overlay;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      background-repeat: repeat;
+    }
+
+    .surface-base { position: relative; z-index: var(--z-base); }
+    .surface-elevated {
+      position: relative;
+      z-index: var(--z-elevated);
+      box-shadow: 0 1px 1px rgba(26,111,181,0.06), 0 8px 24px rgba(18,24,31,0.06);
+    }
+    .surface-floating {
+      position: relative;
+      z-index: var(--z-floating);
+      box-shadow: 0 2px 4px rgba(26,111,181,0.08), 0 18px 40px rgba(18,24,31,0.12), 0 40px 72px rgba(26,111,181,0.10);
+    }
+
+    /* Tailwind/Alpine `transition` = all — clamp to transform + opacity */
+    .transition,
+    .transition-all,
+    .cart-enter {
+      transition-property: transform, opacity;
+      transition-timing-function: var(--ease-spring);
+    }
+
+    a, button {
+      transition: transform 0.22s var(--ease-spring), opacity 0.22s var(--ease-spring);
+    }
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    textarea:focus-visible {
+      outline: 2px solid var(--brand);
+      outline-offset: 3px;
+    }
+    a:active, button:active {
+      transform: scale(0.97);
+    }
+    a:not(.btn):not(.group):hover { opacity: 0.75; }
+
+    .btn {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+    }
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: #000;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.22s var(--ease-spring);
+    }
+    .btn:hover { opacity: 1; }
+    .btn:hover::after { opacity: 0.12; }
+    .btn:active::after { opacity: 0.2; }
+    .btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+
+    .chip:hover { opacity: 0.78; }
+    .chip.is-on { opacity: 1; }
+    .chip.is-on:hover { opacity: 0.92; }
+
+    .card-lift {
+      transition: transform 0.28s var(--ease-spring), opacity 0.28s var(--ease-spring);
+    }
+    .card-lift:hover { transform: translateY(-4px); opacity: 1; }
+
+    .fade-up {
+      animation: fadeUp 0.7s var(--ease-spring) both;
+    }
+    .fade-up-delay { animation-delay: 0.12s; }
+    .fade-up-delay-2 { animation-delay: 0.22s; }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .media-zoom {
+      transition: transform 0.45s var(--ease-spring);
+    }
+    .group:hover .media-zoom {
+      transform: scale(1.05);
+    }
+  </style>
+</head>
+<body
+  class="font-sans text-ink antialiased leading-body"
+  x-data="store()"
+>
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Top bar -->
+  <div class="surface-base border-b border-line/80 bg-white/70 backdrop-blur-sm">
+    <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-card py-tight text-sm text-mist">
+      <p class="hidden sm:block">Ежедневно с 08:00 до 20:00 · Москва и МО</p>
+      <p class="sm:hidden">08:00–20:00</p>
+      <div class="flex items-center gap-item">
+        <a href="tel:+78003026206" class="font-medium text-ink">8 (800) 302-62-06</a>
+        <a href="mailto:info@aeroclim.ru" class="hidden md:inline">info@aeroclim.ru</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="surface-floating sticky top-0 z-[40] border-b border-line/80 bg-white/85 backdrop-blur-md">
+    <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-item py-item">
+      <a href="#" class="flex items-baseline gap-tight">
+        <span class="font-display text-2xl font-semibold tracking-display text-ink">AeroClim</span>
+        <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климат</span>
+      </a>
+
+      <nav class="hidden items-center gap-card text-sm font-medium text-mist md:flex">
+        <a href="#catalog">Каталог</a>
+        <a href="#categories">Типы</a>
+        <a href="#advantages">Преимущества</a>
+        <a href="#brands">Бренды</a>
+      </nav>
+
+      <div class="flex items-center gap-tight">
+        <div class="relative">
+        <button
+          type="button"
+          class="btn inline-flex items-center gap-tight rounded-full bg-sky px-item py-tight text-sm font-medium text-white"
+          @click="cartOpen = true"
+        >
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 4.5h1.8l1.4 10.2h10.6l1.5-7.2H7.2" />
+            <circle cx="9.2" cy="18.5" r="1.2" />
+            <circle cx="16.2" cy="18.5" r="1.2" />
+          </svg>
+          <span class="hidden sm:inline">Корзина</span>
+          <span
+            class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 text-xs"
+            x-text="cartCount"
+          ></span>
+        </button>
+        <div
+          class="surface-floating absolute right-0 top-full z-[50] mt-tight whitespace-nowrap rounded-full bg-ink px-item py-tight text-sm text-white"
+          x-show="toast"
+          x-cloak
+          x-transition.opacity
+          x-text="toast"
+        ></div>
+        </div>
+        <button
+          type="button"
+          class="rounded-full border border-line p-tight text-ink md:hidden"
+          @click="mobileNav = !mobileNav"
+          aria-label="Меню"
+        >
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div
+      class="border-t border-line px-item py-item md:hidden"
+      x-show="mobileNav"
+      x-cloak
+      x-transition.opacity
+    >
+      <nav class="flex flex-col gap-item text-sm font-medium">
+        <a href="#catalog" @click="mobileNav = false">Каталог</a>
+        <a href="#categories" @click="mobileNav = false">Типы</a>
+        <a href="#advantages" @click="mobileNav = false">Преимущества</a>
+        <a href="#brands" @click="mobileNav = false">Бренды</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0">
+        <img
+          src="hero-living.jpg"
+          alt="Светлая гостиная с настенным кондиционером"
+          class="h-full w-full object-cover object-[center_40%]"
+        />
+        <div
+          class="absolute inset-0"
+          style="background:
+            radial-gradient(90% 80% at 8% 50%, rgba(255,255,255,0.94), transparent 62%),
+            radial-gradient(70% 70% at 40% 90%, rgba(244,247,251,0.55), transparent 58%),
+            radial-gradient(50% 50% at 0% 0%, rgba(26,111,181,0.10), transparent 50%);"
+        ></div>
+      </div>
+
+      <div class="page-x relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center py-section sm:min-h-[72vh]">
+        <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">AeroClim · климат</p>
+        <h1 class="fade-up fade-up-delay mt-item max-w-xl font-display text-4xl font-semibold text-ink sm:text-6xl">
+          Свежий климат — каждый день
+        </h1>
+        <p class="fade-up fade-up-delay-2 mt-card max-w-md text-base text-mist sm:text-lg">
+          Кондиционеры и сплит-системы с установкой в Москве. Подбор, доставка и монтаж — с гарантией на работы до 36 месяцев.
+        </p>
+        <div class="fade-up fade-up-delay-2 mt-block flex flex-wrap gap-tight">
+          <a
+            href="#catalog"
+            class="btn rounded-full bg-sky px-card py-item text-sm font-semibold text-white"
+          >
+            Смотреть каталог
+          </a>
+          <a
+            href="#categories"
+            class="btn rounded-full border border-sky/30 bg-white/70 px-card py-item text-sm font-medium text-ink backdrop-blur-sm"
+          >
+            Выбрать тип
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick filters -->
+    <section class="surface-elevated border-b border-line bg-white">
+      <div class="page-x mx-auto flex max-w-6xl gap-tight overflow-x-auto py-item">
+        <template x-for="chip in quickFilters" :key="chip.id">
+          <button
+            type="button"
+            class="chip shrink-0 rounded-full px-item py-tight text-sm"
+            :class="activeQuick === chip.id
+              ? 'is-on bg-ink text-white'
+              : 'bg-paper text-mist'"
+            @click="applyQuick(chip)"
+            x-text="chip.label"
+          ></button>
+        </template>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section id="categories" class="page-x section-y mx-auto max-w-6xl">
+      <div class="mb-block max-w-2xl">
+        <h2 class="font-display text-3xl font-semibold sm:text-4xl">Типы оборудования</h2>
+        <p class="mt-item text-mist">От настенных сплит-систем до VRF — подберём решение под площадь и задачу.</p>
+      </div>
+      <div class="grid grid-cols-2 gap-item sm:grid-cols-3 lg:grid-cols-4">
+        <template x-for="cat in categories" :key="cat.title">
+          <a
+            href="#catalog"
+            class="group relative z-[10] aspect-[4/3] overflow-hidden rounded-2xl shadow-elevated"
+            @click="filterBrand = ''; filterArea = ''; filterInverter = ''; activeQuick = 'all'"
+          >
+            <img :src="cat.img" :alt="cat.title" class="media-zoom h-full w-full object-cover" />
+            <div
+              class="absolute inset-0"
+              style="background: radial-gradient(120% 80% at 50% 100%, rgba(19,32,38,0.78), transparent 70%);"
+            ></div>
+            <span class="absolute bottom-3 left-3 right-3 text-sm font-medium text-white sm:text-base" x-text="cat.title"></span>
+          </a>
+        </template>
+      </div>
+    </section>
+
+    <!-- Catalog -->
+    <section id="catalog" class="surface-base border-y border-line bg-white">
+      <div class="page-x section-y mx-auto max-w-6xl">
+        <div class="mb-block flex flex-col gap-item sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 class="font-display text-3xl font-semibold sm:text-4xl">Популярные модели</h2>
+            <p class="mt-item text-mist">Фильтруйте по бренду, площади и типу компрессора.</p>
+          </div>
+          <p class="text-sm text-mist">
+            Найдено: <span class="font-medium text-ink" x-text="filteredProducts.length"></span>
+          </p>
+        </div>
+
+        <div class="grid gap-block lg:grid-cols-[240px_1fr]">
+          <!-- Filters -->
+          <aside class="surface-base space-y-card rounded-2xl bg-paper p-card lg:sticky lg:top-24 lg:self-start">
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Производитель</p>
+              <div class="flex flex-wrap gap-tight">
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterBrand === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterBrand = ''"
+                >Все</button>
+                <template x-for="b in brands" :key="b">
+                  <button
+                    type="button"
+                    class="chip rounded-full px-item py-tight text-sm"
+                    :class="filterBrand === b ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                    @click="filterBrand = b"
+                    x-text="b"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Площадь</p>
+              <div class="flex flex-wrap gap-tight">
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterArea === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterArea = ''"
+                >Любая</button>
+                <template x-for="a in areas" :key="a">
+                  <button
+                    type="button"
+                    class="chip rounded-full px-item py-tight text-sm"
+                    :class="filterArea === a ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                    @click="filterArea = a"
+                    x-text="'до ' + a + ' м²'"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Компрессор</p>
+              <div class="flex flex-wrap gap-tight">
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterInverter === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterInverter = ''"
+                >Все</button>
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterInverter === 'yes' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterInverter = 'yes'"
+                >Инвертор</button>
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterInverter === 'no' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterInverter = 'no'"
+                >Обычный</button>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              class="text-sm text-sky"
+              @click="resetFilters()"
+            >
+              Сбросить фильтры
+            </button>
+          </aside>
+
+          <!-- Products -->
+          <div>
+            <div class="grid gap-item sm:grid-cols-2 xl:grid-cols-3">
+              <template x-for="p in filteredProducts" :key="p.id">
+                <article class="card-lift surface-elevated group flex flex-col overflow-hidden rounded-2xl border border-line bg-white">
+                  <div class="relative aspect-square overflow-hidden bg-paper">
+                    <button type="button" class="h-full w-full" @click="openQuick(p)">
+                      <img :src="p.img" :alt="p.name" class="media-zoom h-full w-full object-contain p-card" loading="lazy" />
+                    </button>
+                    <span
+                      x-show="p.inverter"
+                      class="absolute left-3 top-3 rounded-full bg-frost px-tight py-1 text-xs font-medium text-sky-dark"
+                    >Инвертор</span>
+                    <button
+                      type="button"
+                      class="btn absolute right-3 top-3 z-[10] inline-flex items-center gap-1.5 rounded-full bg-white/90 px-tight py-1.5 text-xs font-medium text-ink shadow-elevated backdrop-blur-sm"
+                      @click="openQuick(p)"
+                    >
+                      <iconify-icon icon="solar:eye-bold-duotone" class="text-sky" width="16" height="16"></iconify-icon>
+                      <span class="hidden sm:inline">Обзор</span>
+                    </button>
+                  </div>
+                  <div class="flex flex-1 flex-col p-card">
+                    <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="p.brand"></p>
+                    <button type="button" class="mt-tight text-left" @click="openQuick(p)">
+                      <h3 class="text-base font-medium leading-snug" x-text="p.name"></h3>
+                    </button>
+                    <p class="mt-tight text-sm text-mist" x-text="'до ' + p.area + ' м²'"></p>
+                    <div class="mt-auto flex items-end justify-between gap-item pt-block">
+                      <p class="text-lg font-semibold tabular-nums" x-text="formatPrice(p.price)"></p>
+                      <button
+                        type="button"
+                        class="btn rounded-full bg-sky px-item py-tight text-sm font-medium text-white"
+                        @click="addToCart(p)"
+                      >
+                        В корзину
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              </template>
+            </div>
+            <p
+              x-show="filteredProducts.length === 0"
+              class="rounded-2xl border border-dashed border-line px-card py-section text-center text-mist"
+            >
+              Нет товаров по выбранным фильтрам
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Advantages -->
+    <section id="advantages" class="page-x section-y mx-auto max-w-6xl">
+      <div class="mb-block max-w-2xl">
+        <h2 class="font-display text-3xl font-semibold sm:text-4xl">Почему AeroClim</h2>
+        <p class="mt-item text-mist">Прозрачные условия и сервис после продажи — без мелкого шрифта.</p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-item md:grid-cols-12 md:grid-rows-[auto_auto_auto]">
+        <article class="surface-elevated relative overflow-hidden rounded-[1.6rem] bg-sky p-card text-white md:col-span-5 md:row-span-2 md:p-block">
+          <div class="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10"></div>
+          <div class="relative flex h-full min-h-[240px] flex-col justify-between">
+            <iconify-icon icon="solar:shield-check-bold-duotone" width="36" height="36"></iconify-icon>
+            <div class="mt-block">
+              <p class="font-display text-5xl font-semibold tracking-display sm:text-6xl">36 мес.</p>
+              <h3 class="mt-item text-xl font-medium">Гарантия на работы</h3>
+              <p class="mt-tight max-w-xs text-sm text-white/80">Бесплатный выезд мастера в гарантийный период — чиним сами, не перекладываем.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="surface-elevated rounded-[1.6rem] bg-frost p-card md:col-span-7 md:p-block">
+          <div class="flex items-start justify-between gap-item">
+            <iconify-icon icon="solar:delivery-bold-duotone" class="text-sky" width="32" height="32"></iconify-icon>
+            <p class="font-display text-4xl font-semibold tracking-display text-sky">0 ₽</p>
+          </div>
+          <h3 class="mt-card text-lg font-medium">Доставка с монтажом</h3>
+          <p class="mt-tight text-sm text-mist">Бесплатно при заказе установки в Москве и области. Привезём и поставим в один день.</p>
+        </article>
+
+        <article class="surface-elevated rounded-[1.6rem] border border-line bg-white p-card md:col-span-4">
+          <iconify-icon icon="solar:sale-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
+          <p class="mt-block font-display text-3xl font-semibold tracking-display text-ink">−10%</p>
+          <h3 class="mt-tight text-lg font-medium">Лучшая цена</h3>
+          <p class="mt-tight text-sm text-mist">Нашли дешевле — вернём 10% от разницы.</p>
+        </article>
+
+        <article class="surface-elevated rounded-[1.6rem] border border-line bg-white p-card md:col-span-3">
+          <iconify-icon icon="solar:city-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
+          <p class="mt-block font-display text-3xl font-semibold tracking-display text-ink">50+</p>
+          <h3 class="mt-tight text-lg font-medium">Городов</h3>
+          <p class="mt-tight text-sm text-mist">Бригады по Москве и МО.</p>
+        </article>
+
+        <article class="surface-elevated rounded-[1.6rem] border border-line bg-white p-card md:col-span-6">
+          <div class="flex items-center gap-item">
+            <iconify-icon icon="solar:medal-ribbons-star-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
+            <p class="font-display text-3xl font-semibold tracking-display">28</p>
+          </div>
+          <h3 class="mt-block text-lg font-medium">Брендов официально</h3>
+          <p class="mt-tight text-sm text-mist">Дилерские поставки без наценки «за имя» — от Casarte до Mitsubishi.</p>
+        </article>
+
+        <article class="surface-elevated rounded-[1.6rem] bg-frost p-card md:col-span-6">
+          <div class="flex items-center gap-item">
+            <iconify-icon icon="solar:card-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
+            <p class="font-display text-3xl font-semibold tracking-display">0%</p>
+          </div>
+          <h3 class="mt-block text-lg font-medium">Рассрочка без справок</h3>
+          <p class="mt-tight text-sm text-mist">Оформление за несколько минут, без справок о доходах.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Brands -->
+    <section id="brands" class="surface-base border-t border-line bg-white">
+      <div class="page-x section-y mx-auto max-w-6xl">
+        <h2 class="font-display text-3xl font-semibold sm:text-4xl">Производители</h2>
+        <p class="mt-item max-w-xl text-mist">Официальные дилеры климатической техники — подбор без наценок «за бренд».</p>
+        <div class="mt-block flex flex-wrap gap-tight">
+          <template x-for="b in allBrands" :key="b">
+            <button
+              type="button"
+              class="chip rounded-full border border-line bg-paper px-item py-tight text-sm text-mist"
+              @click="filterBrand = b; filterArea = ''; filterInverter = ''; activeQuick = 'all'; document.getElementById('catalog').scrollIntoView()"
+              x-text="b"
+            ></button>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section class="page-x section-y mx-auto max-w-6xl">
+      <div class="grid items-center gap-block lg:grid-cols-2">
+        <div>
+          <h2 class="font-display text-3xl font-semibold sm:text-4xl">Комфорт под ключ</h2>
+          <p class="mt-block text-mist">
+            AeroClim — поставщик кондиционеров и сплит-систем с установкой в Москве и области.
+            Доставка по России, монтаж сертифицированными бригадами, сервисное обслуживание.
+          </p>
+          <ul class="mt-card space-y-item text-sm text-ink">
+            <li class="flex gap-item"><span class="text-sky">—</span> Мульти-сплит, настенные, кассетные и мобильные системы</li>
+            <li class="flex gap-item"><span class="text-sky">—</span> Инверторные и классические модели</li>
+            <li class="flex gap-item"><span class="text-sky">—</span> Бесплатная доставка при заказе монтажа в МО</li>
+          </ul>
+        </div>
+        <div class="surface-elevated relative aspect-[5/4] overflow-hidden rounded-3xl">
+          <img
+            src="https://carata.ru/upload/resize_cache/iblock/206/snympy68eqahtihse5191y2nfugyfb3l/371_230_1/nastennye_kondicionery.jpg"
+            alt="Настенный кондиционер"
+            class="h-full w-full object-cover"
+          />
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="surface-base border-t border-line bg-ink text-white">
+    <div class="page-x mx-auto grid max-w-6xl gap-block py-section md:grid-cols-3">
+      <div>
+        <p class="font-display text-2xl font-semibold tracking-display">AeroClim</p>
+        <p class="mt-item text-sm text-white/60">
+          Магазин кондиционеров. Подбор, продажа и монтаж климатической техники.
+        </p>
+      </div>
+      <div class="text-sm">
+        <p class="font-medium">Контакты</p>
+        <a href="tel:+78003026206" class="mt-item block text-white/70">8 (800) 302-62-06</a>
+        <a href="tel:+74951283657" class="mt-tight block text-white/70">8 (495) 128-36-57</a>
+        <a href="mailto:info@aeroclim.ru" class="mt-tight block text-white/70">info@aeroclim.ru</a>
+      </div>
+      <div class="text-sm">
+        <p class="font-medium">Режим работы</p>
+        <p class="mt-item text-white/70">Ежедневно с 08:00 до 20:00</p>
+        <p class="mt-tight text-white/70">Москва и Московская область</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 px-item py-item text-center text-xs text-white/40 sm:px-card">
+      Макет главной страницы · AeroClim
+    </div>
+  </footer>
+
+  <!-- Cart drawer -->
+  <div
+    class="fixed inset-0 z-[50]"
+    x-show="cartOpen"
+    x-cloak
+    x-transition.opacity
+    @keydown.escape.window="cartOpen = false"
+  >
+    <div class="absolute inset-0 bg-ink/40" @click="cartOpen = false"></div>
+    <div
+      class="cart-enter surface-floating absolute inset-y-0 right-0 z-[50] flex w-full max-w-md flex-col bg-white"
+      x-show="cartOpen"
+      x-transition:enter="duration-300 ease-spring"
+      x-transition:enter-start="translate-x-full opacity-0"
+      x-transition:enter-end="translate-x-0 opacity-100"
+      x-transition:leave="duration-200 ease-spring"
+      x-transition:leave-start="translate-x-0 opacity-100"
+      x-transition:leave-end="translate-x-full opacity-0"
+    >
+      <div class="flex items-center justify-between border-b border-line px-card py-item">
+        <h2 class="text-lg font-semibold" x-text="checkoutStep === 1 ? 'Корзина' : 'Оформление'"></h2>
+        <button type="button" class="rounded-full p-tight text-mist" @click="cartOpen = false" aria-label="Закрыть">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Step 1: cart -->
+      <div class="flex min-h-0 flex-1 flex-col" x-show="checkoutStep === 1">
+        <div class="flex-1 overflow-y-auto px-card py-item">
+          <template x-if="cart.length === 0">
+            <p class="py-section text-center text-mist">Корзина пуста</p>
+          </template>
+          <ul class="space-y-item">
+            <template x-for="item in cart" :key="item.id">
+              <li class="flex gap-item border-b border-line pb-item">
+                <img :src="item.img" :alt="item.name" class="h-16 w-16 rounded-lg bg-paper object-contain p-1" />
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium" x-text="item.name"></p>
+                  <p class="mt-tight text-sm text-mist" x-text="formatPrice(item.price)"></p>
+                  <div class="mt-tight flex items-center gap-tight">
+                    <button type="button" class="h-7 w-7 rounded-full border border-line text-sm" @click="changeQty(item.id, -1)">−</button>
+                    <span class="w-6 text-center text-sm tabular-nums" x-text="item.qty"></span>
+                    <button type="button" class="h-7 w-7 rounded-full border border-line text-sm" @click="changeQty(item.id, 1)">+</button>
+                    <button type="button" class="ml-auto text-xs text-mist" @click="removeFromCart(item.id)">Удалить</button>
+                  </div>
+                </div>
+              </li>
+            </template>
+          </ul>
+        </div>
+        <div class="border-t border-line px-card py-item" x-show="cart.length > 0">
+          <div class="mb-item flex items-center justify-between">
+            <span class="text-mist">Итого</span>
+            <span class="text-lg font-semibold tabular-nums" x-text="formatPrice(cartTotal)"></span>
+          </div>
+          <button
+            type="button"
+            class="btn w-full rounded-full bg-sky py-item text-sm font-semibold text-white"
+            @click="checkoutStep = 2"
+          >
+            Оформить заказ
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: checkout -->
+      <div class="flex min-h-0 flex-1 flex-col" x-show="checkoutStep === 2">
+        <form class="flex flex-1 flex-col" @submit.prevent="submitOrder()">
+          <div class="flex-1 space-y-item overflow-y-auto px-card py-item">
+            <button type="button" class="text-sm text-sky" @click="checkoutStep = 1">← Назад к корзине</button>
+            <label class="block text-sm">
+              <span class="text-mist">Имя</span>
+              <input x-model="order.name" required class="mt-tight w-full rounded-xl border border-line bg-paper px-item py-tight" />
+            </label>
+            <label class="block text-sm">
+              <span class="text-mist">Телефон</span>
+              <input x-model="order.phone" type="tel" required placeholder="+7" class="mt-tight w-full rounded-xl border border-line bg-paper px-item py-tight" />
+            </label>
+            <label class="block text-sm">
+              <span class="text-mist">Адрес / комментарий</span>
+              <textarea x-model="order.address" rows="3" class="mt-tight w-full rounded-xl border border-line bg-paper px-item py-tight"></textarea>
+            </label>
+            <label class="flex items-start gap-tight text-sm text-mist">
+              <input type="checkbox" x-model="order.install" class="mt-1 rounded border-line text-sky" />
+              Нужен монтаж (бесплатная доставка по МО)
+            </label>
+            <div class="rounded-xl bg-frost px-item py-item text-sm">
+              <div class="flex justify-between">
+                <span>Товары</span>
+                <span class="tabular-nums" x-text="formatPrice(cartTotal)"></span>
+              </div>
+              <div class="mt-tight flex justify-between text-mist">
+                <span>Доставка</span>
+                <span x-text="order.install ? 'Бесплатно' : 'от 990 ₽'"></span>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-line px-card py-item">
+            <button type="submit" class="btn w-full rounded-full bg-ink py-item text-sm font-semibold text-white">
+              Отправить заказ
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Step 3: success -->
+      <div class="flex flex-1 flex-col items-center justify-center px-block text-center" x-show="checkoutStep === 3">
+        <div class="mb-item flex h-14 w-14 items-center justify-center rounded-full bg-frost text-2xl text-sky">✓</div>
+        <h3 class="text-xl font-semibold">Заявка принята</h3>
+        <p class="mt-tight text-sm text-mist">Менеджер свяжется с вами для подтверждения заказа и сроков монтажа.</p>
+        <button
+          type="button"
+          class="btn mt-block rounded-full bg-ink px-card py-item text-sm font-medium text-white"
+          @click="finishOrder()"
+        >
+          Продолжить покупки
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick view -->
+  <div
+    class="fixed inset-0 z-[50] flex items-center justify-center p-item sm:p-card"
+    x-show="quickView"
+    x-cloak
+    x-transition.opacity
+    @keydown.escape.window="closeQuick()"
+  >
+    <div class="absolute inset-0 bg-ink/40" @click="closeQuick()"></div>
+    <div
+      class="surface-floating relative z-[50] flex max-h-[90vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white"
+      x-show="quickView"
+      x-transition:enter="duration-300 ease-spring"
+      x-transition:enter-start="opacity-0 scale-[0.98]"
+      x-transition:enter-end="opacity-100 scale-100"
+      x-transition:leave="duration-200 ease-spring"
+      x-transition:leave-start="opacity-100 scale-100"
+      x-transition:leave-end="opacity-0 scale-[0.98]"
+      @click.stop
+    >
+      <div class="flex items-center justify-between border-b border-line px-card py-item">
+        <h2 class="text-lg font-semibold">Быстрый просмотр</h2>
+        <button type="button" class="rounded-full p-tight text-mist" @click="closeQuick()" aria-label="Закрыть">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+            <path stroke-linecap="round" d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </button>
+      </div>
+
+      <template x-if="quickView">
+        <div class="grid min-h-0 flex-1 overflow-y-auto md:grid-cols-2">
+          <div class="flex items-center justify-center bg-paper p-card">
+            <img :src="quickView.img" :alt="quickView.name" class="max-h-64 w-full object-contain md:max-h-80" />
+          </div>
+          <div class="flex flex-col p-card">
+            <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="quickView.brand"></p>
+            <h3 class="mt-tight text-xl font-medium leading-snug" x-text="quickView.name"></h3>
+            <p class="mt-item text-2xl font-semibold tabular-nums" x-text="formatPrice(quickView.price)"></p>
+
+            <dl class="mt-block divide-y divide-line border-y border-line text-sm">
+              <template x-for="row in specsOf(quickView)" :key="row[0]">
+                <div class="flex justify-between gap-item py-tight">
+                  <dt class="text-mist" x-text="row[0]"></dt>
+                  <dd class="text-right font-medium" x-text="row[1]"></dd>
+                </div>
+              </template>
+            </dl>
+
+            <div class="mt-card flex flex-wrap gap-item">
+              <button
+                type="button"
+                class="btn rounded-full bg-sky px-card py-item text-sm font-semibold text-white"
+                @click="addToCart(quickView); closeQuick()"
+              >
+                В корзину
+              </button>
+              <button
+                type="button"
+                class="btn rounded-full border border-line px-card py-item text-sm font-medium text-ink"
+                @click="addToCart(quickView); closeQuick(); cartOpen = true"
+              >
+                Оформить
+              </button>
+            </div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </div>
+
+  <script>
+    function store() {
+      const img = (path) => `https://carata.ru${path}`;
+
+      return {
+        cartOpen: false,
+        quickView: null,
+        mobileNav: false,
+        checkoutStep: 1,
+        toast: '',
+        filterBrand: '',
+        filterArea: '',
+        filterInverter: '',
+        activeQuick: 'all',
+        order: { name: '', phone: '', address: '', install: true },
+        cart: [],
+
+        quickFilters: [
+          { id: 'all', label: 'Все', brand: '', area: '', inverter: '' },
+          { id: 'inv', label: 'С инвертором', brand: '', area: '', inverter: 'yes' },
+          { id: 'onoff', label: 'Без инвертора', brand: '', area: '', inverter: 'no' },
+          { id: 'a23', label: 'До 23 м²', brand: '', area: 23, inverter: '' },
+          { id: 'a27', label: 'До 27 м²', brand: '', area: 27, inverter: '' },
+          { id: 'a36', label: 'До 36 м²', brand: '', area: 36, inverter: '' },
+        ],
+
+        categories: [
+          { title: 'Настенные', img: img('/upload/resize_cache/iblock/206/snympy68eqahtihse5191y2nfugyfb3l/371_230_1/nastennye_kondicionery.jpg') },
+          { title: 'Мульти-сплит', img: img('/upload/resize_cache/iblock/df0/a41vcouff1ouzebrdzl28ly7fbketcnp/371_230_1/multisplit_sistemy.png') },
+          { title: 'Мобильные', img: img('/upload/resize_cache/iblock/3bf/snw66i0w32hwjmec7h8ir1hmdvrrmyow/371_230_1/mobilnye_kondicionery.jpg') },
+          { title: 'Кассетные', img: img('/upload/resize_cache/iblock/314/6kl7we9mexqwrpr6sl24iub97ttg9db3/371_230_1/kassetnye_kondicionery.jpg') },
+          { title: 'Канальные', img: img('/upload/resize_cache/iblock/827/9kk82plx8pltmzlnjl3i1v0bs2vlf7au/371_230_1/kanalnye_kondicionery.jpg') },
+          { title: 'Колонные', img: img('/upload/resize_cache/iblock/90e/ewscxzmn2mzcco6di1tm9amrmc50nyui/371_230_1/kolonnye_kondicionery.jpg') },
+          { title: 'Тепловые насосы', img: img('/upload/resize_cache/iblock/bf1/lz8b82geso8t8d27hc0mqchd8yrgo5u2/371_230_1/teplovye_nasosy_vozduh_vozduh.png') },
+          { title: 'VRF-системы', img: img('/upload/resize_cache/iblock/d92/3x59bod2gk42gmc4jhpxg7cc4wbnj3xl/371_230_1/multizonalnye_vrf_sistemy.png') },
+        ],
+
+        allBrands: [
+          'Casarte', 'Ballu', 'Gree', 'Haier', 'LG', 'Samsung',
+          'Mitsubishi Electric', 'Panasonic', 'Toshiba', 'Electrolux',
+          'Royal Clima', 'Dahatsu', 'Hisense', 'Funai',
+        ],
+
+        products: [
+          {
+            id: 1, brand: 'Casarte', name: 'Casarte СAS25MW1/R3-B',
+            price: 98000, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
+            noise: '19 дБ', energy: 'A+++', refrigerant: 'R32', color: 'Чёрный',
+            img: img('/upload/resize_cache/iblock/287/mttd3qlkxyhcrcqobeydsstr1yay7veu/267_267_1/casarte_sas25mw1_r3_b_1u25mw1_r3.jpg'),
+          },
+          {
+            id: 2, brand: 'Denko', name: 'Denko DU-07',
+            price: 24000, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
+            noise: '26 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/4f0/tv9clnmfjwtdrbb3536g51akid89556e/267_267_1/denko_du_07.jpg'),
+          },
+          {
+            id: 3, brand: 'Dahatsu', name: 'Dahatsu DA-07H',
+            price: 26800, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.3 кВт',
+            noise: '25 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/de2/2veglem5plp6dxo39zehqipw168jtwhn/267_267_1/dahatsu_da_07h.jpg'),
+          },
+          {
+            id: 4, brand: 'Ballu', name: 'Ballu BSVI-07HN8',
+            price: 29250, area: 20, inverter: true, cooling: '2.2 кВт', heat: '2.3 кВт',
+            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/c0a/5ct00i95o4f97a9tql2liokrzyomotar/267_267_1/ballu_bsvi_07hn8.jpg'),
+          },
+          {
+            id: 5, brand: 'Gree', name: 'Gree PULAR Inverter Eco',
+            price: 60000, area: 27, inverter: true, cooling: '2.7 кВт', heat: '2.9 кВт',
+            noise: '20 дБ', energy: 'A+++', refrigerant: 'R32', color: 'Графит',
+            img: img('/upload/resize_cache/iblock/a13/bj46es0n4q8ldaduo0jnr8xe2ax5njg1/267_267_1/nastennaya_split_sistema_gree_pular_inverter_matte_gwh09agaxa_k6dna1d.jpeg'),
+          },
+          {
+            id: 6, brand: 'Thaicon', name: 'Thaicon TL-RWB20-VR',
+            price: 32500, area: 36, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/0a6/vby4q701vccf9zcr24d17ehd7dxjle6v/267_267_1/thaicon_tl_rwb100_na_tl_rob100_na.jpg'),
+          },
+          {
+            id: 7, brand: 'Rovex', name: 'Rovex RS-07CBS4 Megapolis',
+            price: 22900, area: 20, inverter: false, cooling: '2.0 кВт', heat: '2.1 кВт',
+            noise: '27 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/d15/p0nsvp9hmbyfnpje5o2jq3vd8tnmcg7t/267_267_1/rovex_rs_07cbs4_megapolis.jpg'),
+          },
+          {
+            id: 8, brand: 'Rovex', name: 'Rovex RS-07MUIN1 Rich',
+            price: 27900, area: 20, inverter: true, cooling: '2.2 кВт', heat: '2.4 кВт',
+            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/13e/9zpcha149br1hr1k655xadmsqhn77biz/267_267_1/rovex_rs_07muin1_rich.jpg'),
+          },
+          {
+            id: 9, brand: 'Rovex', name: 'Rovex ABS-07HE STAR N',
+            price: 22900, area: 23, inverter: false, cooling: '2.3 кВт', heat: '2.4 кВт',
+            noise: '26 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
+            img: img('/upload/resize_cache/iblock/463/1a16kresu9dwkfz6jcqs7jjj2iondak6/267_267_1/rovex_ast_09he_mira_n.jpg'),
+          },
+        ],
+
+        get brands() {
+          return [...new Set(this.products.map((p) => p.brand))];
+        },
+        get areas() {
+          return [23, 27, 36];
+        },
+        get filteredProducts() {
+          return this.products.filter((p) => {
+            if (this.filterBrand && p.brand !== this.filterBrand) return false;
+            if (this.filterArea && p.area > Number(this.filterArea)) return false;
+            if (this.filterInverter === 'yes' && !p.inverter) return false;
+            if (this.filterInverter === 'no' && p.inverter) return false;
+            return true;
+          });
+        },
+        get cartCount() {
+          return this.cart.reduce((s, i) => s + i.qty, 0);
+        },
+        get cartTotal() {
+          return this.cart.reduce((s, i) => s + i.price * i.qty, 0);
+        },
+
+        formatPrice(n) {
+          return new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
+        },
+        specsOf(p) {
+          return [
+            ['Производитель', p.brand],
+            ['Площадь', 'до ' + p.area + ' м²'],
+            ['Компрессор', p.inverter ? 'Инверторный' : 'Обычный on/off'],
+            ['Охлаждение', p.cooling],
+            ['Обогрев', p.heat],
+            ['Шум внутр. блока', p.noise],
+            ['Класс энергии', p.energy],
+            ['Хладагент', p.refrigerant],
+            ['Цвет', p.color],
+            ['Тип', 'Настенная сплит-система'],
+          ];
+        },
+        openQuick(p) {
+          this.quickView = p;
+        },
+        closeQuick() {
+          this.quickView = null;
+        },
+        applyQuick(chip) {
+          this.activeQuick = chip.id;
+          this.filterBrand = chip.brand;
+          this.filterArea = chip.area || '';
+          this.filterInverter = chip.inverter;
+          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
+        },
+        resetFilters() {
+          this.filterBrand = '';
+          this.filterArea = '';
+          this.filterInverter = '';
+          this.activeQuick = 'all';
+        },
+        addToCart(p) {
+          const existing = this.cart.find((i) => i.id === p.id);
+          if (existing) existing.qty += 1;
+          else this.cart.push({ ...p, qty: 1 });
+          this.showToast('Товар добавлен в корзину');
+        },
+        changeQty(id, delta) {
+          const item = this.cart.find((i) => i.id === id);
+          if (!item) return;
+          item.qty += delta;
+          if (item.qty <= 0) this.removeFromCart(id);
+        },
+        removeFromCart(id) {
+          this.cart = this.cart.filter((i) => i.id !== id);
+        },
+        submitOrder() {
+          this.checkoutStep = 3;
+          this.cart = [];
+        },
+        finishOrder() {
+          this.checkoutStep = 1;
+          this.cartOpen = false;
+          this.order = { name: '', phone: '', address: '', install: true };
+        },
+        showToast(msg) {
+          this.toast = msg;
+          clearTimeout(this._toastTimer);
+          this._toastTimer = setTimeout(() => { this.toast = ''; }, 3000);
+        },
+      };
+    }
+  </script>
+</body>
+</html>
