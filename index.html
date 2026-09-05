@@ -180,6 +180,13 @@
     .group:hover .media-zoom {
       transform: scale(1.05);
     }
+
+    .cat-label-glass {
+      background: rgba(26, 111, 181, 0.82);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(18, 24, 31, 0.18);
+    }
   </style>
 </head>
 <body
@@ -308,7 +315,7 @@
             Выбрать тип
           </a>
         </div>
-        <div class="fade-up fade-up-delay-2 mt-card flex max-w-xl flex-wrap gap-tight">
+        <div class="fade-up fade-up-delay-2 mt-card flex flex-nowrap gap-tight overflow-x-auto pb-tight">
           <template x-for="chip in quickFilters" :key="chip.id">
             <button
               type="button"
@@ -338,11 +345,10 @@
             @click="filterBrand = ''; filterModel = ''; filterArea = ''; filterInverter = ''; activeQuick = 'all'"
           >
             <img :src="cat.img" :alt="cat.title" class="media-zoom h-full w-full object-cover" />
-            <div
-              class="absolute inset-0"
-              style="background: linear-gradient(to top, rgba(18,24,31,0.72) 0%, rgba(18,24,31,0.18) 38%, transparent 62%);"
-            ></div>
-            <span class="absolute bottom-3 left-3 right-3 text-sm font-medium text-white sm:text-base" x-text="cat.title"></span>
+            <span
+              class="cat-label-glass absolute bottom-3 left-3 inline-block rounded-lg border border-white/20 px-item py-tight text-sm font-medium text-white sm:text-base"
+              x-text="cat.title"
+            ></span>
           </a>
         </template>
       </div>
@@ -471,7 +477,7 @@
           <div>
             <div class="grid gap-item sm:grid-cols-2 xl:grid-cols-3">
               <template x-for="p in filteredProducts" :key="p.id">
-                <article class="card-lift group flex flex-col overflow-hidden rounded-2xl bg-white">
+                <article class="card-lift group flex flex-col overflow-hidden rounded-2xl border border-line/80 bg-white">
                   <div class="relative aspect-[3/2] overflow-hidden bg-white">
                     <button type="button" class="h-full w-full" @click="openQuick(p)">
                       <img :src="p.img" :alt="p.name" class="media-zoom h-full w-full object-contain px-item py-tight" loading="lazy" />
@@ -603,25 +609,48 @@
 
     <!-- About -->
     <section class="page-x section-y mx-auto max-w-6xl">
-      <div class="grid items-center gap-block lg:grid-cols-2">
-        <div>
-          <h2 class="font-display text-3xl font-semibold sm:text-4xl">Комфорт под ключ</h2>
+      <div class="grid gap-card lg:grid-cols-12 lg:items-center">
+        <div class="lg:col-span-5">
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky">О компании</p>
+          <h2 class="mt-item font-display text-3xl font-semibold sm:text-4xl">Комфорт под ключ</h2>
           <p class="mt-block text-mist">
             AeroClim — поставщик кондиционеров и сплит-систем с установкой в Москве и области.
             Доставка по России, монтаж сертифицированными бригадами, сервисное обслуживание.
           </p>
-          <ul class="mt-card space-y-item text-sm text-ink">
-            <li class="flex gap-item"><span class="text-sky">—</span> Мульти-сплит, настенные, кассетные и мобильные системы</li>
-            <li class="flex gap-item"><span class="text-sky">—</span> Инверторные и классические модели</li>
-            <li class="flex gap-item"><span class="text-sky">—</span> Бесплатная доставка при заказе монтажа в МО</li>
-          </ul>
+          <div class="mt-card space-y-tight">
+            <div class="flex items-start gap-item rounded-2xl bg-frost p-item">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky">
+                <iconify-icon icon="solar:devices-bold-duotone" width="22" height="22"></iconify-icon>
+              </div>
+              <p class="pt-1.5 text-sm leading-snug text-ink">Мульти-сплит, настенные, кассетные и мобильные системы</p>
+            </div>
+            <div class="flex items-start gap-item rounded-2xl bg-frost p-item">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky">
+                <iconify-icon icon="solar:bolt-circle-bold-duotone" width="22" height="22"></iconify-icon>
+              </div>
+              <p class="pt-1.5 text-sm leading-snug text-ink">Инверторные и классические модели</p>
+            </div>
+            <div class="flex items-start gap-item rounded-2xl bg-frost p-item">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky">
+                <iconify-icon icon="solar:delivery-bold-duotone" width="22" height="22"></iconify-icon>
+              </div>
+              <p class="pt-1.5 text-sm leading-snug text-ink">Бесплатная доставка при заказе монтажа в МО</p>
+            </div>
+          </div>
         </div>
-        <div class="relative aspect-[5/4] overflow-hidden rounded-3xl">
-          <img
-            src="https://carata.ru/upload/resize_cache/iblock/206/snympy68eqahtihse5191y2nfugyfb3l/371_230_1/nastennye_kondicionery.jpg"
-            alt="Настенный кондиционер"
-            class="h-full w-full object-cover"
-          />
+
+        <div class="relative lg:col-span-7 lg:pl-card">
+          <div class="relative overflow-hidden rounded-[1.6rem] border border-line/80 lg:-translate-y-2">
+            <img
+              src="hero-living.jpg"
+              alt="Светлая гостиная с настенным кондиционером"
+              class="aspect-[4/3] w-full object-cover object-center lg:aspect-[5/4]"
+            />
+            <div class="absolute bottom-card left-card rounded-2xl border border-white/30 bg-sky/75 px-item py-tight text-white backdrop-blur-md sm:px-card sm:py-item">
+              <p class="font-display text-2xl font-semibold tracking-display sm:text-3xl">36 мес.</p>
+              <p class="text-xs text-white/85 sm:text-sm">гарантия на монтаж</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
