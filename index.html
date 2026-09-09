@@ -187,6 +187,38 @@
       -webkit-backdrop-filter: blur(8px);
       box-shadow: 0 4px 12px rgba(18, 24, 31, 0.16);
     }
+
+    .filter-tip {
+      position: relative;
+      display: inline-flex;
+      cursor: help;
+      vertical-align: middle;
+    }
+    .filter-tip::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      width: max-content;
+      max-width: 240px;
+      padding: 8px 10px;
+      border-radius: 10px;
+      background: #12181f;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 400;
+      line-height: 1.45;
+      white-space: normal;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s;
+      z-index: 30;
+      box-shadow: 0 8px 24px rgba(18, 24, 31, 0.18);
+    }
+    .filter-tip:hover::after,
+    .filter-tip:focus-visible::after { opacity: 1; }
+
   </style>
 </head>
 <body
@@ -282,7 +314,7 @@
         <img
           src="hero-living.jpg"
           alt="Светлая гостиная с настенным кондиционером"
-          class="h-full w-full object-cover object-[center_40%]"
+          class="h-full w-full object-cover object-[center_40%] lg:object-[center_58%]"
         />
         <div
           class="absolute inset-0"
@@ -299,7 +331,7 @@
           Свежий климат — каждый день
         </h1>
         <p class="fade-up fade-up-delay-2 mt-card max-w-md text-base text-mist sm:text-lg">
-          Кондиционеры и сплит-системы с установкой в Москве. Подбор, доставка и монтаж — с гарантией на работы до 36 месяцев.
+          Кондиционеры и сплит-системы с установкой в Москве и Московской области. Подбор, доставка и монтаж — с гарантией на работы и оборудование до 36 месяцев (на отдельные модели — до 5 лет).
         </p>
         <div class="fade-up fade-up-delay-2 mt-block flex flex-wrap gap-tight">
           <a
@@ -315,17 +347,33 @@
             Выбрать тип
           </a>
         </div>
-        <div class="fade-up fade-up-delay-2 mt-card flex flex-nowrap gap-tight overflow-x-auto pb-tight">
-          <template x-for="chip in quickFilters" :key="chip.id">
-            <button
-              type="button"
-              class="chip shrink-0 rounded-full px-item py-tight text-sm backdrop-blur-sm"
-              :class="activeQuick === chip.id
-                ? 'is-on bg-ink text-white'
-                : 'bg-white/70 text-mist'"
-              @click="applyQuick(chip)"
-              x-text="chip.label"
-            ></button>
+        <div class="fade-up fade-up-delay-2 relative mt-card" @mouseleave="hideHeroTip()">
+          <div class="flex flex-nowrap gap-tight overflow-x-auto pb-tight">
+            <template x-for="chip in quickFilters" :key="chip.id">
+              <button
+                type="button"
+                class="chip shrink-0 rounded-full px-item py-tight text-sm backdrop-blur-sm"
+                :class="activeQuick === chip.id
+                  ? 'is-on bg-ink text-white'
+                  : 'bg-white/70 text-mist'"
+                @mouseenter="showHeroTip($event, chip.tip)"
+                @focus="showHeroTip($event, chip.tip)"
+                @blur="hideHeroTip()"
+                @click="applyQuick(chip)"
+                x-text="chip.label"
+              ></button>
+            </template>
+          </div>
+          <template x-teleport="body">
+            <div
+              x-show="heroTip"
+              x-cloak
+              x-transition.opacity
+              class="pointer-events-none fixed z-[70] max-w-[260px] rounded-xl bg-ink px-3 py-2.5 text-left text-xs leading-snug text-white shadow-[0_10px_28px_rgba(18,24,31,0.2)]"
+              :class="heroTipAbove ? '-translate-x-1/2 -translate-y-full' : '-translate-x-1/2'"
+              :style="'left:' + heroTipX + 'px;top:' + heroTipY + 'px;'"
+              x-text="heroTip"
+            ></div>
           </template>
         </div>
       </div>
@@ -342,7 +390,7 @@
           <a
             href="#catalog"
             class="group relative z-[10] aspect-[4/3] overflow-hidden rounded-2xl"
-            @click="filterBrand = ''; filterModel = ''; filterArea = ''; filterInverter = ''; activeQuick = 'all'"
+            @click="resetFilters()"
           >
             <img :src="cat.img" :alt="cat.title" class="media-zoom h-full w-full object-cover" />
             <span
@@ -360,7 +408,7 @@
         <div class="mb-block flex flex-col gap-item sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="font-display text-3xl font-semibold sm:text-4xl">Популярные модели</h2>
-            <p class="mt-item text-mist">Фильтруйте по бренду, модели, площади и типу компрессора.</p>
+            <p class="mt-item text-mist">Фильтруйте по бренду, серии, модели, площади, цвету, классу энергии, Wi‑Fi и стране сборки.</p>
           </div>
           <p class="text-sm text-mist">
             Найдено: <span class="font-medium text-ink" x-text="filteredProducts.length"></span>
@@ -369,7 +417,26 @@
 
         <div class="grid gap-block lg:grid-cols-[240px_1fr]">
           <!-- Filters -->
-          <aside class="surface-base space-y-card rounded-2xl bg-paper p-card lg:sticky lg:top-24 lg:self-start">
+          <aside class="surface-base rounded-2xl bg-paper lg:sticky lg:top-24 lg:self-start">
+            <button
+              type="button"
+              class="flex w-full items-center justify-between gap-item rounded-2xl p-card text-left lg:hidden"
+              @click="filtersOpen = !filtersOpen"
+            >
+              <span class="font-medium text-ink">
+                Фильтры
+                <span
+                  x-show="activeFilterCount > 0"
+                  class="ml-1 text-sm font-normal text-sky"
+                  x-text="'(' + activeFilterCount + ')'"
+                ></span>
+              </span>
+              <span class="text-sm text-sky" x-text="filtersOpen ? 'Свернуть' : 'Показать'"></span>
+            </button>
+            <div
+              class="space-y-card overflow-y-auto p-card pt-0 lg:max-h-[calc(100vh-7rem)] lg:p-card lg:pt-card"
+              :class="filtersOpen ? 'block' : 'hidden lg:block'"
+            >
             <div>
               <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Производитель</p>
               <div class="flex flex-wrap gap-tight">
@@ -386,6 +453,30 @@
                     :class="filterBrand === b ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
                     @click="setBrand(b)"
                     x-text="b"
+                  ></button>
+                </template>
+              </div>
+            </div>
+
+            <div x-show="filterBrand" x-cloak>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Серия
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Линейка моделей внутри бренда — помогает быстро сузить выбор по классу и комплектации.">ⓘ</span>
+              </p>
+              <div class="flex flex-wrap gap-tight">
+                <button
+                  type="button"
+                  class="chip rounded-full px-item py-tight text-sm"
+                  :class="filterSeries === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                  @click="filterSeries = ''; filterModel = ''"
+                >Все серии</button>
+                <template x-for="s in brandSeries" :key="s">
+                  <button
+                    type="button"
+                    class="chip rounded-full px-item py-tight text-sm"
+                    :class="filterSeries === s ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
+                    @click="filterSeries = s; filterModel = ''"
+                    x-text="s"
                   ></button>
                 </template>
               </div>
@@ -420,7 +511,10 @@
             </div>
 
             <div>
-              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Площадь</p>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Площадь
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Рекомендуемая площадь помещения для комфортного охлаждения при стандартной высоте потолков.">ⓘ</span>
+              </p>
               <div class="flex flex-wrap gap-tight">
                 <button
                   type="button"
@@ -441,7 +535,10 @@
             </div>
 
             <div>
-              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">Компрессор</p>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Компрессор
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Инверторный — плавная регулировка мощности, тише и экономичнее. Обычный on/off — включается на полную мощность, проще и дешевле.">ⓘ</span>
+              </p>
               <div class="flex flex-wrap gap-tight">
                 <button
                   type="button"
@@ -460,7 +557,59 @@
                   class="chip rounded-full px-item py-tight text-sm"
                   :class="filterInverter === 'no' ? 'is-on bg-ink text-white' : 'bg-white text-mist'"
                   @click="filterInverter = 'no'"
-                >Обычный</button>
+                >Без инвертора</button>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Цвет
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Цвет внутреннего блока — важен для вписывания кондиционера в интерьер.">ⓘ</span>
+              </p>
+              <div class="flex flex-wrap gap-tight">
+                <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterColor === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterColor = ''">Любой</button>
+                <template x-for="c in colors" :key="c">
+                  <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterColor === c ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterColor = c" x-text="c"></button>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Класс энергии
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Чем выше класс (A, A+, A++), тем меньше расход электроэнергии при той же мощности охлаждения.">ⓘ</span>
+              </p>
+              <div class="flex flex-wrap gap-tight">
+                <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterEnergy === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterEnergy = ''">Любой</button>
+                <template x-for="e in energyClasses" :key="e">
+                  <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterEnergy === e ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterEnergy = e" x-text="e"></button>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Wi‑Fi
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Встроенный — модуль уже в комплекте. Поддерживается — можно подключить опционально. Нет — управление только с пульта.">ⓘ</span>
+              </p>
+              <div class="flex flex-wrap gap-tight">
+                <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterWifi === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterWifi = ''">Любой</button>
+                <template x-for="w in wifiOptions" :key="w">
+                  <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterWifi === w ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterWifi = w" x-text="w"></button>
+                </template>
+              </div>
+            </div>
+
+            <div>
+              <p class="mb-item text-xs font-semibold uppercase tracking-[0.16em] text-mist">
+                Страна сборки
+                <span class="filter-tip ml-0.5 text-sky" tabindex="0" data-tip="Страна, где собрана сплит-система. Не путать с брендом — многие марки производятся на заводах в Азии.">ⓘ</span>
+              </p>
+              <div class="flex flex-wrap gap-tight">
+                <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterCountry === '' ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterCountry = ''">Любая</button>
+                <template x-for="co in countries" :key="co">
+                  <button type="button" class="chip rounded-full px-item py-tight text-sm" :class="filterCountry === co ? 'is-on bg-ink text-white' : 'bg-white text-mist'" @click="filterCountry = co" x-text="co"></button>
+                </template>
               </div>
             </div>
 
@@ -471,6 +620,7 @@
             >
               Сбросить фильтры
             </button>
+            </div>
           </aside>
 
           <!-- Products -->
@@ -533,15 +683,15 @@
         <p class="mt-item text-mist">Прозрачные условия и сервис после продажи — без мелкого шрифта.</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-item md:grid-cols-12 md:grid-rows-[auto_auto_auto]">
+      <div class="grid grid-cols-1 gap-item md:grid-cols-12">
         <article class="relative overflow-hidden rounded-[1.6rem] bg-sky p-card text-white md:col-span-5 md:row-span-2 md:p-block">
           <div class="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10"></div>
           <div class="relative flex h-full min-h-[240px] flex-col items-start">
             <iconify-icon icon="solar:shield-check-bold-duotone" class="block shrink-0" width="36" height="36"></iconify-icon>
             <div class="mt-block w-full">
               <p class="font-display text-5xl font-semibold tracking-display sm:text-6xl">36 мес.</p>
-              <h3 class="mt-item text-xl font-medium">Гарантия на работы</h3>
-              <p class="mt-tight max-w-xs text-sm text-white/80">Бесплатный выезд мастера в гарантийный период — чиним сами, не перекладываем.</p>
+              <h3 class="mt-item text-xl font-medium">Гарантия на работы и оборудование</h3>
+              <p class="mt-tight max-w-xs text-sm text-white/80">36 месяцев на монтаж и технику. На отдельные модели — расширенная гарантия до 5 лет (60 месяцев).</p>
             </div>
           </div>
         </article>
@@ -549,42 +699,26 @@
         <article class="rounded-[1.6rem] bg-frost p-card md:col-span-7 md:p-block">
           <div class="flex items-start justify-between gap-item">
             <iconify-icon icon="solar:delivery-bold-duotone" class="text-sky" width="32" height="32"></iconify-icon>
-            <p class="font-display text-4xl font-semibold tracking-display text-sky">0 ₽</p>
+            <p class="font-display text-4xl font-semibold tracking-display text-sky">1 000 ₽</p>
           </div>
-          <h3 class="mt-card text-lg font-medium">Доставка с монтажом</h3>
-          <p class="mt-tight text-sm text-mist">Бесплатно при заказе установки в Москве и области. Привезём и поставим в один день.</p>
+          <h3 class="mt-card text-lg font-medium">Доставка</h3>
+          <p class="mt-tight text-sm text-mist">Фиксированная стоимость доставки по Москве и Московской области — 1 000 ₽.</p>
         </article>
 
         <article class="rounded-[1.6rem] bg-white p-card md:col-span-4">
-          <iconify-icon icon="solar:sale-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
-          <p class="mt-block font-display text-3xl font-semibold tracking-display text-ink">−10%</p>
-          <h3 class="mt-tight text-lg font-medium">Лучшая цена</h3>
-          <p class="mt-tight text-sm text-mist">Нашли дешевле — вернём 10% от разницы.</p>
-        </article>
-
-        <article class="rounded-[1.6rem] bg-white p-card md:col-span-3">
           <iconify-icon icon="solar:city-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
           <p class="mt-block font-display text-3xl font-semibold tracking-display text-ink">50+</p>
           <h3 class="mt-tight text-lg font-medium">Городов</h3>
-          <p class="mt-tight text-sm text-mist">Бригады по Москве и МО.</p>
+          <p class="mt-tight text-sm text-mist">Работаем: 50+ городов по Москве и Московской области.</p>
         </article>
 
-        <article class="rounded-[1.6rem] bg-white p-card md:col-span-6">
+        <article class="rounded-[1.6rem] bg-white p-card md:col-span-3">
           <div class="flex items-center gap-item">
             <iconify-icon icon="solar:medal-ribbons-star-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
             <p class="font-display text-3xl font-semibold tracking-display">28</p>
           </div>
-          <h3 class="mt-block text-lg font-medium">Брендов официально</h3>
-          <p class="mt-tight text-sm text-mist">Дилерские поставки без наценки «за имя» — от Casarte до Mitsubishi.</p>
-        </article>
-
-        <article class="rounded-[1.6rem] bg-frost p-card md:col-span-6">
-          <div class="flex items-center gap-item">
-            <iconify-icon icon="solar:card-bold-duotone" class="text-sky" width="30" height="30"></iconify-icon>
-            <p class="font-display text-3xl font-semibold tracking-display">0%</p>
-          </div>
-          <h3 class="mt-block text-lg font-medium">Рассрочка без справок</h3>
-          <p class="mt-tight text-sm text-mist">Оформление за несколько минут, без справок о доходах.</p>
+          <h3 class="mt-tight text-lg font-medium">Брендов</h3>
+          <p class="mt-tight text-sm text-mist">Официальные поставки без наценки «за имя».</p>
         </article>
       </div>
     </section>
@@ -599,7 +733,7 @@
             <button
               type="button"
               class="chip rounded-full border border-line bg-paper px-item py-tight text-sm text-mist"
-              @click="setBrand(b); filterArea = ''; filterInverter = ''; activeQuick = 'all'; document.getElementById('catalog').scrollIntoView()"
+              @click="setBrand(b); filterArea = ''; filterInverter = ''; filterColor = ''; filterEnergy = ''; filterWifi = ''; filterCountry = ''; activeQuick = 'all'; document.getElementById('catalog').scrollIntoView()"
               x-text="b"
             ></button>
           </template>
@@ -614,8 +748,9 @@
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky">О компании</p>
           <h2 class="mt-item font-display text-3xl font-semibold sm:text-4xl">Комфорт под ключ</h2>
           <p class="mt-block text-mist">
-            AeroClim — поставщик кондиционеров и сплит-систем с установкой в Москве и области.
+            AeroClim — интернет-магазин кондиционеров и сплит-систем с установкой по Москве и области.
             Доставка по России, монтаж сертифицированными бригадами, сервисное обслуживание.
+            Гарантия на монтаж и оборудование — до 36 месяцев.
           </p>
           <div class="mt-card space-y-tight">
             <div class="flex items-start gap-item rounded-2xl bg-frost p-item">
@@ -634,7 +769,13 @@
               <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky">
                 <iconify-icon icon="solar:delivery-bold-duotone" width="22" height="22"></iconify-icon>
               </div>
-              <p class="pt-1.5 text-sm leading-snug text-ink">Бесплатная доставка при заказе монтажа в МО</p>
+              <p class="pt-1.5 text-sm leading-snug text-ink">Доставка — 1 000 ₽ по Москве и Московской области</p>
+            </div>
+            <div class="flex items-start gap-item rounded-2xl bg-frost p-item">
+              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white text-sky">
+                <iconify-icon icon="solar:shield-check-bold-duotone" width="22" height="22"></iconify-icon>
+              </div>
+              <p class="pt-1.5 text-sm leading-snug text-ink">36 месяцев гарантии на работы и на оборудование</p>
             </div>
           </div>
         </div>
@@ -648,7 +789,7 @@
             />
             <div class="absolute bottom-card left-card rounded-2xl border border-white/30 bg-sky/75 px-item py-tight text-white backdrop-blur-md sm:px-card sm:py-item">
               <p class="font-display text-2xl font-semibold tracking-display sm:text-3xl">36 мес.</p>
-              <p class="text-xs text-white/85 sm:text-sm">гарантия на монтаж</p>
+              <p class="text-xs text-white/85 sm:text-sm">гарантия на монтаж и оборудование</p>
             </div>
           </div>
         </div>
@@ -767,7 +908,7 @@
             </label>
             <label class="flex items-start gap-tight text-sm text-mist">
               <input type="checkbox" x-model="order.install" class="mt-1 rounded border-line text-sky" />
-              Нужен монтаж (бесплатная доставка по МО)
+              Нужен монтаж
             </label>
             <div class="rounded-xl bg-frost px-item py-item text-sm">
               <div class="flex justify-between">
@@ -776,7 +917,7 @@
               </div>
               <div class="mt-tight flex justify-between text-mist">
                 <span>Доставка</span>
-                <span x-text="order.install ? 'Бесплатно' : 'от 990 ₽'"></span>
+                <span>1 000 ₽</span>
               </div>
             </div>
           </div>
@@ -877,6 +1018,48 @@
   <script>
     function store() {
       const img = (path) => `https://carata.ru${path}`;
+      const u = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=800&q=80`;
+
+      const deriveSeries = (p) => {
+        const n = p.name;
+        if (p.brand === 'AUX') {
+          if (n.includes('/FJ-')) return 'AUX Classic';
+          if (n.includes('/CB-')) return 'Comfort Bit';
+          return 'AUX Standard';
+        }
+        if (p.brand === 'Ecoclima') {
+          if (n.includes('07QCW')) return 'QC Wi-Fi';
+          if (n.includes('HE')) return 'HE Series';
+          if (n.includes('CH')) return 'Comfort Home';
+          if (n.includes('TC')) return 'Turbo Cool';
+          if (n.includes('AX')) return 'AX Inverter';
+          return 'Inverter Pro';
+        }
+        if (p.brand === 'Gree') return 'Pular Inverter';
+        if (p.brand === 'Electrolux') return 'Air Stream';
+        if (p.brand === 'Rovex') {
+          if (n.includes('Megapolis')) return 'Megapolis';
+          if (n.includes('Rich')) return 'Rich';
+          return 'STAR';
+        }
+        if (p.brand === 'Thaicon') return 'TL-RWB';
+        return 'Standard';
+      };
+
+      const defaultWifi = (p) => {
+        if (p.name.includes('QCW') || p.name.includes('PULAR')) return 'Встроенный';
+        if (p.inverter && p.price >= 32000) return 'Поддерживается';
+        return 'Нет';
+      };
+
+      const defaultCountry = (brand) => ({ Thaicon: 'Таиланд' }[brand] || 'Китай');
+
+      const enrich = (p) => ({
+        ...p,
+        series: p.series || deriveSeries(p),
+        wifi: p.wifi || defaultWifi(p),
+        country: p.country || defaultCountry(p.brand),
+      });
 
       return {
         cartOpen: false,
@@ -885,33 +1068,43 @@
         checkoutStep: 1,
         toast: '',
         filterBrand: '',
+        filterSeries: '',
         filterModel: '',
         filterArea: '',
         filterInverter: '',
+        filterColor: '',
+        filterEnergy: '',
+        filterWifi: '',
+        filterCountry: '',
         activeQuick: 'all',
+        heroTip: '',
+        heroTipX: 0,
+        heroTipY: 0,
+        heroTipAbove: false,
+        filtersOpen: false,
         modelListExpanded: false,
         modelTagsLimit: 6,
         order: { name: '', phone: '', address: '', install: true },
         cart: [],
 
         quickFilters: [
-          { id: 'all', label: 'Все', brand: '', area: '', inverter: '' },
-          { id: 'inv', label: 'С инвертором', brand: '', area: '', inverter: 'yes' },
-          { id: 'onoff', label: 'Без инвертора', brand: '', area: '', inverter: 'no' },
-          { id: 'a23', label: 'До 23 м²', brand: '', area: 23, inverter: '' },
-          { id: 'a27', label: 'До 27 м²', brand: '', area: 27, inverter: '' },
-          { id: 'a36', label: 'До 36 м²', brand: '', area: 36, inverter: '' },
+          { id: 'all', label: 'Все', brand: '', area: '', inverter: '', tip: 'Все модели каталога без ограничений по типу компрессора и площади.' },
+          { id: 'inv', label: 'С инвертором', brand: '', area: '', inverter: 'yes', tip: 'Инвертор плавно регулирует мощность — тише работает, меньше расходует электричество и точнее держит температуру.' },
+          { id: 'onoff', label: 'Без инвертора', brand: '', area: '', inverter: 'no', tip: 'Классический on/off: включается на полную мощность. Проще и доступнее — подходит для редкого использования.' },
+          { id: 'a23', label: 'До 23 м²', brand: '', area: 23, inverter: '', tip: 'Спальня, детская или небольшой кабинет до ~23 м² при высоте потолков до 2,7 м.' },
+          { id: 'a27', label: 'До 27 м²', brand: '', area: 27, inverter: '', tip: 'Средняя комната, гостиная-студия или кухня-гостиная до ~27 м².' },
+          { id: 'a36', label: 'До 36 м²', brand: '', area: 36, inverter: '', tip: 'Просторная гостиная, зал или open space до ~36 м² — нужна более мощная сплит-система.' },
         ],
 
         categories: [
-          { title: 'Настенные', img: img('/upload/resize_cache/iblock/206/snympy68eqahtihse5191y2nfugyfb3l/371_230_1/nastennye_kondicionery.jpg') },
-          { title: 'Мульти-сплит', img: img('/upload/resize_cache/iblock/df0/a41vcouff1ouzebrdzl28ly7fbketcnp/371_230_1/multisplit_sistemy.png') },
-          { title: 'Мобильные', img: img('/upload/resize_cache/iblock/3bf/snw66i0w32hwjmec7h8ir1hmdvrrmyow/371_230_1/mobilnye_kondicionery.jpg') },
-          { title: 'Кассетные', img: img('/upload/resize_cache/iblock/314/6kl7we9mexqwrpr6sl24iub97ttg9db3/371_230_1/kassetnye_kondicionery.jpg') },
-          { title: 'Канальные', img: img('/upload/resize_cache/iblock/827/9kk82plx8pltmzlnjl3i1v0bs2vlf7au/371_230_1/kanalnye_kondicionery.jpg') },
-          { title: 'Колонные', img: img('/upload/resize_cache/iblock/90e/ewscxzmn2mzcco6di1tm9amrmc50nyui/371_230_1/kolonnye_kondicionery.jpg') },
-          { title: 'Тепловые насосы', img: img('/upload/resize_cache/iblock/bf1/lz8b82geso8t8d27hc0mqchd8yrgo5u2/371_230_1/teplovye_nasosy_vozduh_vozduh.png') },
-          { title: 'VRF-системы', img: img('/upload/resize_cache/iblock/d92/3x59bod2gk42gmc4jhpxg7cc4wbnj3xl/371_230_1/multizonalnye_vrf_sistemy.png') },
+          { title: 'Настенные', img: 'assets/categories/cat-nastennye.png' },
+          { title: 'Мульти-сплит', img: 'assets/categories/cat-multisplit.png' },
+          { title: 'Мобильные', img: 'assets/categories/cat-mobilnye.png' },
+          { title: 'Кассетные', img: 'assets/categories/cat-kassetnye.png' },
+          { title: 'Канальные', img: 'assets/categories/cat-kanalnye.png' },
+          { title: 'Колонные', img: 'assets/categories/cat-kolonnye.png' },
+          { title: 'Тепловые насосы', img: 'assets/categories/cat-teplovye-nasosy.png' },
+          { title: 'VRF-системы', img: 'assets/categories/cat-vrf.png' },
         ],
 
         allBrands: [
@@ -1101,14 +1294,33 @@
             noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
             img: img('/upload/resize_cache/iblock/463/1a16kresu9dwkfz6jcqs7jjj2iondak6/267_267_1/rovex_ast_09he_mira_n.jpg'),
           },
-        ],
+        ].map(enrich),
 
+        get activeFilterCount() {
+          let n = 0;
+          if (this.filterBrand) n++;
+          if (this.filterSeries) n++;
+          if (this.filterModel) n++;
+          if (this.filterArea) n++;
+          if (this.filterInverter) n++;
+          if (this.filterColor) n++;
+          if (this.filterEnergy) n++;
+          if (this.filterWifi) n++;
+          if (this.filterCountry) n++;
+          return n;
+        },
         get brands() {
           return [...new Set(this.products.map((p) => p.brand))];
         },
+        get brandSeries() {
+          if (!this.filterBrand) return [];
+          return [...new Set(this.products.filter((p) => p.brand === this.filterBrand).map((p) => p.series))].sort();
+        },
         get brandModels() {
           if (!this.filterBrand) return [];
-          return [...new Set(this.products.filter((p) => p.brand === this.filterBrand).map((p) => p.name))];
+          let list = this.products.filter((p) => p.brand === this.filterBrand);
+          if (this.filterSeries) list = list.filter((p) => p.series === this.filterSeries);
+          return [...new Set(list.map((p) => p.name))];
         },
         get visibleBrandModels() {
           const all = this.brandModels;
@@ -1122,13 +1334,30 @@
         get areas() {
           return [23, 27, 36];
         },
+        get colors() {
+          return [...new Set(this.products.map((p) => p.color))].sort();
+        },
+        get energyClasses() {
+          return [...new Set(this.products.map((p) => p.energy))].sort((a, b) => b.length - a.length);
+        },
+        get wifiOptions() {
+          return ['Встроенный', 'Поддерживается', 'Нет'];
+        },
+        get countries() {
+          return [...new Set(this.products.map((p) => p.country))].sort();
+        },
         get filteredProducts() {
           return this.products.filter((p) => {
             if (this.filterBrand && p.brand !== this.filterBrand) return false;
+            if (this.filterSeries && p.series !== this.filterSeries) return false;
             if (this.filterModel && p.name !== this.filterModel) return false;
             if (this.filterArea && p.area > Number(this.filterArea)) return false;
             if (this.filterInverter === 'yes' && !p.inverter) return false;
             if (this.filterInverter === 'no' && p.inverter) return false;
+            if (this.filterColor && p.color !== this.filterColor) return false;
+            if (this.filterEnergy && p.energy !== this.filterEnergy) return false;
+            if (this.filterWifi && p.wifi !== this.filterWifi) return false;
+            if (this.filterCountry && p.country !== this.filterCountry) return false;
             return true;
           });
         },
@@ -1145,12 +1374,15 @@
         specsOf(p) {
           return [
             ['Производитель', p.brand],
+            ['Серия', p.series],
             ['Площадь', 'до ' + p.area + ' м²'],
             ['Компрессор', p.inverter ? 'Инверторный' : 'Обычный on/off'],
             ['Охлаждение', p.cooling],
             ['Обогрев', p.heat],
             ['Шум внутр. блока', p.noise],
             ['Класс энергии', p.energy],
+            ['Wi‑Fi', p.wifi],
+            ['Страна сборки', p.country],
             ['Хладагент', p.refrigerant],
             ['Цвет', p.color],
             ['Тип', 'Настенная сплит-система'],
@@ -1164,12 +1396,32 @@
         },
         setBrand(b) {
           this.filterBrand = b;
+          this.filterSeries = '';
           this.filterModel = '';
           this.modelListExpanded = false;
         },
+        showHeroTip(e, tip) {
+          const r = e.currentTarget.getBoundingClientRect();
+          this.heroTip = tip;
+          this.heroTipX = r.left + r.width / 2;
+          const below = r.bottom + 10;
+          if (below + 96 > window.innerHeight - 8) {
+            this.heroTipY = r.top - 10;
+            this.heroTipAbove = true;
+          } else {
+            this.heroTipY = below;
+            this.heroTipAbove = false;
+          }
+        },
+        hideHeroTip() {
+          this.heroTip = '';
+          this.heroTipAbove = false;
+        },
         applyQuick(chip) {
+          this.hideHeroTip();
           this.activeQuick = chip.id;
           this.filterBrand = chip.brand;
+          this.filterSeries = '';
           this.filterModel = '';
           this.filterArea = chip.area || '';
           this.filterInverter = chip.inverter;
@@ -1177,9 +1429,14 @@
         },
         resetFilters() {
           this.filterBrand = '';
+          this.filterSeries = '';
           this.filterModel = '';
           this.filterArea = '';
           this.filterInverter = '';
+          this.filterColor = '';
+          this.filterEnergy = '';
+          this.filterWifi = '';
+          this.filterCountry = '';
           this.activeQuick = 'all';
           this.modelListExpanded = false;
         },
