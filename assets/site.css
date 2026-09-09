@@ -79,7 +79,8 @@
     a:active, button:active {
       transform: scale(0.97);
     }
-    a:not(.btn):not(.group):hover { opacity: 0.75; }
+    a:not(.btn):not(.group):not(.nav-keep):hover { opacity: 0.75; }
+    .nav-drop a:hover { opacity: 1; background: #f4f7fb; }
 
     .btn {
       position: relative;

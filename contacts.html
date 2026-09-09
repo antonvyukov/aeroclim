@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>О магазине — AeroClim</title>
+  <title>Контакты — AeroClim</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="assets/tailwind-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
@@ -77,50 +77,47 @@
 
   <main>
     <section class="page-x section-y mx-auto max-w-6xl">
-      <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">О магазине</p>
-      <h1 class="fade-up fade-up-delay mt-item max-w-2xl font-display text-4xl font-semibold sm:text-5xl">Интернет-магазин климатической техники с установкой</h1>
+      <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">Контакты</p>
+      <h1 class="fade-up fade-up-delay mt-item max-w-2xl font-display text-4xl font-semibold sm:text-5xl">Свяжитесь с нами — ответим в рабочее время</h1>
       <p class="fade-up fade-up-delay-2 mt-card max-w-2xl text-lg text-mist">
-        AeroClim — интернет-магазин кондиционеров и сплит-систем с установкой по Москве и Московской области.
-        Подбираем оборудование под площадь, привозим и монтируем сертифицированными бригадами.
+        Ежедневно с 08:00 до 20:00. Подберём модель, посчитаем монтаж и согласуем доставку по Москве и области.
       </p>
     </section>
     <section class="surface-base border-y border-line bg-white">
       <div class="page-x section-y mx-auto grid max-w-6xl gap-item md:grid-cols-3">
-        <article class="rounded-[1.6rem] bg-sky p-card text-white">
-          <p class="font-display text-4xl font-semibold">36 мес.</p>
-          <h2 class="mt-item text-lg font-medium">Гарантия на работы и оборудование</h2>
-          <p class="mt-tight text-sm text-white/80">На отдельные модели — расширенная гарантия до 5 лет.</p>
-        </article>
         <article class="rounded-[1.6rem] bg-frost p-card">
-          <p class="font-display text-4xl font-semibold text-sky">1 000 ₽</p>
-          <h2 class="mt-item text-lg font-medium">Фиксированная доставка</h2>
-          <p class="mt-tight text-sm text-mist">По Москве и Московской области. Работаем в 50+ городах.</p>
+          <p class="text-xs uppercase tracking-[0.16em] text-mist">Телефон</p>
+          <a href="tel:+78003026206" class="mt-item block text-xl font-medium text-ink">8 (800) 302-62-06</a>
+          <a href="tel:+74951283657" class="mt-tight block text-ink">8 (495) 128-36-57</a>
         </article>
         <article class="rounded-[1.6rem] bg-paper p-card">
-          <p class="font-display text-4xl font-semibold">08:00–20:00</p>
-          <h2 class="mt-item text-lg font-medium">Ежедневно</h2>
-          <p class="mt-tight text-sm text-mist">8 (800) 302-62-06 · info@aeroclim.ru</p>
+          <p class="text-xs uppercase tracking-[0.16em] text-mist">Почта</p>
+          <a href="mailto:info@aeroclim.ru" class="mt-item block text-xl font-medium text-ink">info@aeroclim.ru</a>
+          <p class="mt-tight text-sm text-mist">Ответим в течение рабочего дня.</p>
+        </article>
+        <article class="rounded-[1.6rem] bg-sky p-card text-white">
+          <p class="text-xs uppercase tracking-[0.16em] text-white/70">Режим</p>
+          <p class="mt-item text-xl font-medium">08:00–20:00</p>
+          <p class="mt-tight text-sm text-white/80">Ежедневно · Москва и Московская область</p>
         </article>
       </div>
     </section>
     <section class="page-x section-y mx-auto max-w-6xl">
-      <div class="grid gap-card lg:grid-cols-12 lg:items-center">
-        <div class="lg:col-span-6">
-          <h2 class="font-display text-3xl font-semibold">Как мы работаем</h2>
-          <ol class="mt-card space-y-item text-mist">
-            <li><span class="font-medium text-ink">1. Подбор.</span> Считаем площадь, шум и энергокласс — без навязанных «топовых» серий.</li>
-            <li><span class="font-medium text-ink">2. Доставка.</span> Фиксированные 1 000 ₽, привезём в согласованный день.</li>
-            <li><span class="font-medium text-ink">3. Монтаж.</span> Свои бригады. Гарантия на работы и технику — 36 месяцев.</li>
-            <li><span class="font-medium text-ink">4. Сервис.</span> Остаёмся на связи после установки, не перекладываем на «сервис завода».</li>
-          </ol>
-          <a href="index.html#catalog" class="btn mt-block inline-block rounded-full bg-sky px-card py-item text-sm font-semibold text-white">Смотреть каталог</a>
-        </div>
-        <div class="overflow-hidden rounded-[1.6rem] border border-line/80 lg:col-span-6">
-          <img src="hero-living.jpg" alt="Интерьер с кондиционером" class="aspect-[5/4] w-full object-cover" />
-        </div>
-      </div>
+      <h2 class="font-display text-3xl font-semibold">Напишите нам</h2>
+      <form class="mt-card max-w-xl space-y-item" @submit.prevent="showToast('Сообщение отправлено')">
+        <label class="block text-sm"><span class="text-mist">Имя</span>
+          <input required class="mt-tight w-full rounded-xl border border-line bg-white px-item py-tight" />
+        </label>
+        <label class="block text-sm"><span class="text-mist">Телефон</span>
+          <input type="tel" required placeholder="+7" class="mt-tight w-full rounded-xl border border-line bg-white px-item py-tight" />
+        </label>
+        <label class="block text-sm"><span class="text-mist">Сообщение</span>
+          <textarea rows="4" class="mt-tight w-full rounded-xl border border-line bg-white px-item py-tight"></textarea>
+        </label>
+        <button type="submit" class="btn rounded-full bg-ink px-card py-item text-sm font-semibold text-white">Отправить</button>
+      </form>
     </section>
-  </main>
+</main>
   <footer class="surface-base border-t border-line bg-ink text-white">
     <div class="page-x mx-auto grid max-w-6xl gap-block py-section md:grid-cols-3">
       <div>

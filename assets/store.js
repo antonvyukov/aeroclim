@@ -50,6 +50,7 @@
         cartOpen: false,
         quickView: null,
         mobileNav: false,
+        catalogOpen: false,
         checkoutStep: 1,
         checkoutDone: false,
         toast: '',
