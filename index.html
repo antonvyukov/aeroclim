@@ -219,6 +219,32 @@
     .filter-tip:hover::after,
     .filter-tip:focus-visible::after { opacity: 1; }
 
+    @media (prefers-reduced-motion: no-preference) {
+      .scroll-reveal {
+        opacity: 0;
+        transform: translateY(16px);
+        transition: opacity 0.6s var(--ease-spring), transform 0.6s var(--ease-spring);
+      }
+      .scroll-reveal.is-visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .scroll-reveal-stagger.is-visible > * {
+        animation: fadeUp 0.55s var(--ease-spring) both;
+      }
+      .scroll-reveal-stagger.is-visible > *:nth-child(1) { animation-delay: 0.04s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(2) { animation-delay: 0.08s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(3) { animation-delay: 0.12s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(4) { animation-delay: 0.16s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(5) { animation-delay: 0.20s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(6) { animation-delay: 0.24s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(7) { animation-delay: 0.28s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(8) { animation-delay: 0.32s; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .scroll-reveal { opacity: 1; transform: none; }
+    }
+
   </style>
 </head>
 <body
@@ -381,11 +407,11 @@
 
     <!-- Categories -->
     <section id="categories" class="page-x section-y mx-auto max-w-6xl">
-      <div class="mb-block max-w-2xl">
+      <div class="scroll-reveal mb-block max-w-2xl">
         <h2 class="font-display text-3xl font-semibold sm:text-4xl">Типы оборудования</h2>
         <p class="mt-item text-mist">От настенных сплит-систем до VRF — подберём решение под площадь и задачу.</p>
       </div>
-      <div class="grid grid-cols-2 gap-item sm:grid-cols-3 lg:grid-cols-4">
+      <div class="scroll-reveal-stagger grid grid-cols-2 gap-item sm:grid-cols-3 lg:grid-cols-4">
         <template x-for="cat in categories" :key="cat.title">
           <a
             href="#catalog"
@@ -405,7 +431,7 @@
     <!-- Catalog -->
     <section id="catalog" class="surface-base border-y border-line bg-white">
       <div class="page-x section-y mx-auto max-w-6xl">
-        <div class="mb-block flex flex-col gap-item sm:flex-row sm:items-end sm:justify-between">
+        <div class="scroll-reveal mb-block flex flex-col gap-item sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 class="font-display text-3xl font-semibold sm:text-4xl">Популярные модели</h2>
             <p class="mt-item text-mist">Фильтруйте по бренду, серии, модели, площади, цвету, классу энергии, Wi‑Fi и стране сборки.</p>
@@ -678,12 +704,12 @@
 
     <!-- Advantages -->
     <section id="advantages" class="page-x section-y mx-auto max-w-6xl">
-      <div class="mb-block max-w-2xl">
+      <div class="scroll-reveal mb-block max-w-2xl">
         <h2 class="font-display text-3xl font-semibold sm:text-4xl">Почему AeroClim</h2>
         <p class="mt-item text-mist">Прозрачные условия и сервис после продажи — без мелкого шрифта.</p>
       </div>
 
-      <div class="grid grid-cols-1 gap-item md:grid-cols-12">
+      <div class="scroll-reveal-stagger grid grid-cols-1 gap-item md:grid-cols-12">
         <article class="relative overflow-hidden rounded-[1.6rem] bg-sky p-card text-white md:col-span-5 md:row-span-2 md:p-block">
           <div class="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/10"></div>
           <div class="relative flex h-full min-h-[240px] flex-col items-start">
@@ -726,9 +752,11 @@
     <!-- Brands -->
     <section id="brands" class="surface-base border-t border-line bg-white">
       <div class="page-x section-y mx-auto max-w-6xl">
+        <div class="scroll-reveal">
         <h2 class="font-display text-3xl font-semibold sm:text-4xl">Производители</h2>
         <p class="mt-item max-w-xl text-mist">Официальные дилеры климатической техники — подбор без наценок «за бренд».</p>
-        <div class="mt-block flex flex-wrap gap-tight">
+        </div>
+        <div class="scroll-reveal-stagger mt-block flex flex-wrap gap-tight">
           <template x-for="b in allBrands" :key="b">
             <button
               type="button"
@@ -744,7 +772,7 @@
     <!-- About -->
     <section class="page-x section-y mx-auto max-w-6xl">
       <div class="grid gap-card lg:grid-cols-12 lg:items-center">
-        <div class="lg:col-span-5">
+        <div class="scroll-reveal lg:col-span-5">
           <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky">О компании</p>
           <h2 class="mt-item font-display text-3xl font-semibold sm:text-4xl">Комфорт под ключ</h2>
           <p class="mt-block text-mist">
@@ -780,7 +808,7 @@
           </div>
         </div>
 
-        <div class="relative lg:col-span-7 lg:pl-card">
+        <div class="scroll-reveal relative lg:col-span-7 lg:pl-card">
           <div class="relative overflow-hidden rounded-[1.6rem] border border-line/80 lg:-translate-y-2">
             <img
               src="hero-living.jpg"
@@ -1471,6 +1499,47 @@
         },
       };
     }
+  </script>
+  <script>
+    (() => {
+      const markVisible = (el) => el.classList.add('is-visible');
+
+      const boot = () => {
+        const els = document.querySelectorAll('.scroll-reveal, .scroll-reveal-stagger');
+        if (!els.length) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          els.forEach(markVisible);
+          return;
+        }
+        if (!('IntersectionObserver' in window)) {
+          els.forEach(markVisible);
+          return;
+        }
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach(({ isIntersecting, target }) => {
+              if (!isIntersecting) return;
+              markVisible(target);
+              io.unobserve(target);
+            });
+          },
+          { threshold: 0, rootMargin: '0px 0px -40px 0px' }
+        );
+        els.forEach((el) => {
+          io.observe(el);
+          const r = el.getBoundingClientRect();
+          if (r.top < window.innerHeight - 40 && r.bottom > 40) markVisible(el);
+        });
+      };
+
+      const start = () => requestAnimationFrame(boot);
+      document.addEventListener('alpine:initialized', start, { once: true });
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', start, { once: true });
+      } else {
+        start();
+      }
+    })();
   </script>
 </body>
 </html>
