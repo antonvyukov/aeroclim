@@ -59,6 +59,7 @@
       --brand: #1a6fb5;
       --brand-rgb: 26, 111, 181;
       --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
+      --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
       --space-tight: 8px;
       --space-item: 16px;
       --space-card: 24px;
@@ -166,10 +167,10 @@
     .card-lift:hover { transform: translateY(-4px); opacity: 1; }
 
     .fade-up {
-      animation: fadeUp 0.7s var(--ease-spring) both;
+      animation: fadeUp 1.25s var(--ease-reveal) both;
     }
-    .fade-up-delay { animation-delay: 0.12s; }
-    .fade-up-delay-2 { animation-delay: 0.22s; }
+    .fade-up-delay { animation-delay: 0.22s; }
+    .fade-up-delay-2 { animation-delay: 0.42s; }
     @keyframes fadeUp {
       from { opacity: 0; transform: translateY(14px); }
       to { opacity: 1; transform: translateY(0); }
@@ -223,26 +224,47 @@
       .scroll-reveal {
         opacity: 0;
         transform: translateY(16px);
-        transition: opacity 0.6s var(--ease-spring), transform 0.6s var(--ease-spring);
+        transition: opacity 1.15s var(--ease-reveal), transform 1.15s var(--ease-reveal);
       }
       .scroll-reveal.is-visible {
         opacity: 1;
         transform: translateY(0);
       }
       .scroll-reveal-stagger.is-visible > * {
-        animation: fadeUp 0.55s var(--ease-spring) both;
+        animation: fadeUp 1.1s var(--ease-reveal) both;
       }
-      .scroll-reveal-stagger.is-visible > *:nth-child(1) { animation-delay: 0.04s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(2) { animation-delay: 0.08s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(3) { animation-delay: 0.12s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(4) { animation-delay: 0.16s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(5) { animation-delay: 0.20s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(6) { animation-delay: 0.24s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(7) { animation-delay: 0.28s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(8) { animation-delay: 0.32s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(1) { animation-delay: 0.08s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(2) { animation-delay: 0.18s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(3) { animation-delay: 0.28s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(4) { animation-delay: 0.38s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(5) { animation-delay: 0.48s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(6) { animation-delay: 0.58s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(7) { animation-delay: 0.68s; }
+      .scroll-reveal-stagger.is-visible > *:nth-child(8) { animation-delay: 0.78s; }
+
+      .cat-cascade:not(.is-visible) > a {
+        opacity: 0;
+        transform: translateY(22px) scale(0.985);
+      }
+      .cat-cascade.is-visible > a {
+        animation: catCascadeIn 1.2s var(--ease-reveal) both;
+      }
+      .cat-cascade.is-visible > a:nth-of-type(1) { animation-delay: 0ms; }
+      .cat-cascade.is-visible > a:nth-of-type(2) { animation-delay: 160ms; }
+      .cat-cascade.is-visible > a:nth-of-type(3) { animation-delay: 320ms; }
+      .cat-cascade.is-visible > a:nth-of-type(4) { animation-delay: 480ms; }
+      .cat-cascade.is-visible > a:nth-of-type(5) { animation-delay: 640ms; }
+      .cat-cascade.is-visible > a:nth-of-type(6) { animation-delay: 800ms; }
+      .cat-cascade.is-visible > a:nth-of-type(7) { animation-delay: 960ms; }
+      .cat-cascade.is-visible > a:nth-of-type(8) { animation-delay: 1120ms; }
+    }
+    @keyframes catCascadeIn {
+      from { opacity: 0; transform: translateY(22px) scale(0.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
     @media (prefers-reduced-motion: reduce) {
       .scroll-reveal { opacity: 1; transform: none; }
+      .cat-cascade > * { opacity: 1; transform: none; animation: none !important; }
     }
 
   </style>
@@ -411,7 +433,7 @@
         <h2 class="font-display text-3xl font-semibold sm:text-4xl">Типы оборудования</h2>
         <p class="mt-item text-mist">От настенных сплит-систем до VRF — подберём решение под площадь и задачу.</p>
       </div>
-      <div class="scroll-reveal-stagger grid grid-cols-2 gap-item sm:grid-cols-3 lg:grid-cols-4">
+      <div class="cat-cascade grid grid-cols-2 gap-item sm:grid-cols-3 lg:grid-cols-4">
         <template x-for="cat in categories" :key="cat.title">
           <a
             href="#catalog"
@@ -1505,7 +1527,7 @@
       const markVisible = (el) => el.classList.add('is-visible');
 
       const boot = () => {
-        const els = document.querySelectorAll('.scroll-reveal, .scroll-reveal-stagger');
+        const els = document.querySelectorAll('.scroll-reveal, .scroll-reveal-stagger, .cat-cascade');
         if (!els.length) return;
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           els.forEach(markVisible);
