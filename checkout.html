@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Оформление заказа — AeroClim</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind-config.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
+  <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/site.css" />
+</head>
+<body class="font-sans text-ink antialiased leading-body" x-data="store()">
+  <div class="grain" aria-hidden="true"></div>
+  <div class="surface-base border-b border-line/80 bg-white/70 backdrop-blur-sm">
+    <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-card py-tight text-sm text-mist">
+      <p class="hidden sm:block">Ежедневно с 08:00 до 20:00 · Москва и МО</p>
+      <p class="sm:hidden">08:00–20:00</p>
+      <div class="flex items-center gap-item">
+        <a href="tel:+78003026206" class="font-medium text-ink">8 (800) 302-62-06</a>
+        <a href="mailto:info@aeroclim.ru" class="hidden md:inline">info@aeroclim.ru</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="surface-floating sticky top-0 z-[40] border-b border-line/80 bg-white/85 backdrop-blur-md">
+    <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-item py-item">
+      <a href="index.html" class="flex items-baseline gap-tight">
+        <span class="font-display text-2xl font-semibold tracking-display text-ink">AeroClim</span>
+        <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климатическая техника</span>
+      </a>
+      <nav class="hidden items-center gap-card text-sm font-medium text-mist md:flex">
+        <a href="index.html#catalog">Каталог</a>
+        <a href="index.html#categories">Типы</a>
+        <a href="about.html">О магазине</a>
+      </nav>
+      <div class="flex items-center gap-tight">
+        <div class="relative">
+          <a href="cart.html" class="btn inline-flex items-center gap-tight rounded-full bg-sky px-item py-tight text-sm font-medium text-white">
+            <span class="hidden sm:inline">Корзина</span>
+            <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 text-xs" x-text="cartCount"></span>
+          </a>
+          <div class="surface-floating absolute right-0 top-full z-[50] mt-tight whitespace-nowrap rounded-full bg-ink px-item py-tight text-sm text-white" x-show="toast" x-cloak x-transition.opacity x-text="toast"></div>
+        </div>
+        <button type="button" class="rounded-full border border-line p-tight text-ink md:hidden" @click="mobileNav = !mobileNav" aria-label="Меню">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" /></svg>
+        </button>
+      </div>
+    </div>
+    <div class="border-t border-line px-item py-item md:hidden" x-show="mobileNav" x-cloak x-transition.opacity>
+      <nav class="flex flex-col gap-item text-sm font-medium">
+        <a href="index.html#catalog" @click="mobileNav = false">Каталог</a>
+        <a href="index.html#categories" @click="mobileNav = false">Типы</a>
+        <a href="about.html" @click="mobileNav = false">О магазине</a>
+        <a href="cart.html" @click="mobileNav = false">Корзина</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-x section-y mx-auto max-w-6xl">
+      <template x-if="checkoutDone">
+        <div class="mx-auto max-w-xl py-section text-center">
+          <div class="mx-auto mb-item flex h-14 w-14 items-center justify-center rounded-full bg-frost text-2xl text-sky">✓</div>
+          <h1 class="font-display text-3xl font-semibold">Заявка принята</h1>
+          <p class="mt-item text-mist">Менеджер свяжется с вами для подтверждения заказа, доставки и сроков монтажа.</p>
+          <a href="index.html" class="btn mt-block inline-block rounded-full bg-ink px-card py-item text-sm font-medium text-white">На главную</a>
+        </div>
+      </template>
+      <div x-show="!checkoutDone">
+        <p class="text-sm text-mist"><a href="cart.html">← Назад в корзину</a></p>
+        <p class="mt-item text-xs font-semibold uppercase tracking-[0.2em] text-sky">Оформление</p>
+        <h1 class="mt-item font-display text-4xl font-semibold">Контакты и доставка</h1>
+        <div class="mt-block grid gap-block lg:grid-cols-12">
+          <form class="space-y-item lg:col-span-7" @submit.prevent="submitOrder()">
+            <label class="block text-sm"><span class="text-mist">Имя</span>
+              <input x-model="order.name" required class="mt-tight w-full rounded-xl border border-line bg-white px-item py-tight" />
+            </label>
+            <label class="block text-sm"><span class="text-mist">Телефон</span>
+              <input x-model="order.phone" type="tel" required placeholder="+7" class="mt-tight w-full rounded-xl border border-line bg-white px-item py-tight" />
+            </label>
+            <label class="block text-sm"><span class="text-mist">Адрес / комментарий</span>
+              <textarea x-model="order.address" rows="4" class="mt-tight w-full rounded-xl border border-line bg-white px-item py-tight"></textarea>
+            </label>
+            <label class="flex items-start gap-tight text-sm text-mist">
+              <input type="checkbox" x-model="order.install" class="mt-1 rounded border-line" />
+              Нужен монтаж — рассчитаем смету после звонка
+            </label>
+            <button type="submit" class="btn rounded-full bg-ink px-card py-item text-sm font-semibold text-white" :disabled="cart.length === 0">Отправить заказ</button>
+            <p x-show="cart.length === 0" class="text-sm text-mist">Сначала добавьте товары в <a href="cart.html" class="text-sky">корзину</a>.</p>
+          </form>
+          <aside class="h-fit rounded-[1.6rem] border border-line/80 bg-white p-card lg:col-span-5">
+            <h2 class="text-lg font-medium">Состав заказа</h2>
+            <ul class="mt-item space-y-tight text-sm">
+              <template x-for="item in cart" :key="item.id">
+                <li class="flex justify-between gap-item">
+                  <span class="text-mist" x-text="item.name + ' × ' + item.qty"></span>
+                  <span class="tabular-nums" x-text="formatPrice(item.price * item.qty)"></span>
+                </li>
+              </template>
+            </ul>
+            <div class="mt-card flex justify-between text-sm">
+              <span class="text-mist">Доставка</span>
+              <span x-text="cart.length ? formatPrice(deliveryFee) : '—'"></span>
+            </div>
+            <div class="mt-tight flex justify-between font-semibold">
+              <span>Итого</span>
+              <span class="tabular-nums" x-text="formatPrice(orderTotal)"></span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </section>
+  </main>
+  <footer class="surface-base border-t border-line bg-ink text-white">
+    <div class="page-x mx-auto grid max-w-6xl gap-block py-section md:grid-cols-3">
+      <div>
+        <p class="font-display text-2xl font-semibold tracking-display">AeroClim</p>
+        <p class="mt-item text-sm text-white/60">Интернет-магазин кондиционеров и сплит-систем с установкой по Москве и области.</p>
+      </div>
+      <div class="text-sm">
+        <p class="font-medium">Разделы</p>
+        <a href="index.html#catalog" class="mt-item block text-white/70">Каталог</a>
+        <a href="index.html#categories" class="mt-tight block text-white/70">Типы оборудования</a>
+        <a href="about.html" class="mt-tight block text-white/70">О магазине</a>
+        <a href="cart.html" class="mt-tight block text-white/70">Корзина</a>
+      </div>
+      <div class="text-sm">
+        <p class="font-medium">Контакты</p>
+        <a href="tel:+78003026206" class="mt-item block text-white/70">8 (800) 302-62-06</a>
+        <a href="mailto:info@aeroclim.ru" class="mt-tight block text-white/70">info@aeroclim.ru</a>
+        <p class="mt-item text-white/70">Ежедневно с 08:00 до 20:00</p>
+      </div>
+    </div>
+    <div class="border-t border-white/10 px-item py-item text-center text-xs text-white/40 sm:px-card">AeroClim · климат уюта</div>
+  </footer>
+  <script src="assets/store.js"></script>
+  <script src="assets/reveal.js"></script>
+</body>
+</html>

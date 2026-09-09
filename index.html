@@ -5,269 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AeroClim — кондиционеры и сплит-системы</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="assets/tailwind-config.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.8/dist/cdn.min.js"></script>
   <script src="https://code.iconify.design/iconify-icon/2.3.0/iconify-icon.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,500;8..60,600&display=swap" rel="stylesheet" />
-  <script>
-    tailwind.config = {
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Outfit', 'system-ui', 'sans-serif'],
-            display: ['"Source Serif 4"', 'Georgia', 'serif'],
-          },
-          colors: {
-            ink: '#12181f',
-            mist: '#5c6874',
-            paper: '#f4f7fb',
-            line: '#d5dde6',
-            frost: '#e6eef6',
-            sky: {
-              DEFAULT: '#1a6fb5',
-              dark: '#145a94',
-              soft: '#dceaf7',
-            },
-          },
-          spacing: {
-            tight: '8px',
-            item: '16px',
-            card: '24px',
-            block: '40px',
-            section: '80px',
-          },
-          letterSpacing: {
-            display: '-0.03em',
-          },
-          lineHeight: {
-            body: '1.7',
-          },
-          boxShadow: {
-            elevated: '0 1px 1px rgba(26,111,181,0.06), 0 8px 24px rgba(18,24,31,0.06)',
-            floating: '0 2px 4px rgba(26,111,181,0.08), 0 18px 40px rgba(18,24,31,0.12), 0 40px 72px rgba(26,111,181,0.10)',
-          },
-          transitionTimingFunction: {
-            spring: 'cubic-bezier(0.22, 1.2, 0.36, 1)',
-          },
-        },
-      },
-    };
-  </script>
-  <style>
-    :root {
-      --brand: #1a6fb5;
-      --brand-rgb: 26, 111, 181;
-      --ease-spring: cubic-bezier(0.22, 1.2, 0.36, 1);
-      --ease-reveal: cubic-bezier(0.16, 1, 0.3, 1);
-      --space-tight: 8px;
-      --space-item: 16px;
-      --space-card: 24px;
-      --space-block: 40px;
-      --space-section: 80px;
-      --z-base: 0;
-      --z-elevated: 10;
-      --z-floating: 40;
-      --z-overlay: 50;
-      --z-grain: 90;
-    }
-    [x-cloak] { display: none !important; }
-    iconify-icon { display: inline-block; vertical-align: middle; }
-    html { scroll-behavior: smooth; }
-    body {
-      color: #12181f;
-      line-height: 1.7;
-      background:
-        radial-gradient(1100px 520px at 8% -12%, rgba(26, 111, 181, 0.16), transparent 58%),
-        radial-gradient(820px 460px at 100% 0%, rgba(110, 170, 225, 0.14), transparent 52%),
-        radial-gradient(720px 400px at 70% 108%, rgba(26, 111, 181, 0.08), transparent 55%),
-        #f4f7fb;
-    }
-    h1, h2 {
-      letter-spacing: -0.03em;
-      line-height: 1.12;
-    }
-    .page-x { padding-inline: var(--space-item); }
-    @media (min-width: 640px) { .page-x { padding-inline: var(--space-card); } }
-    .section-y { padding-block: 64px; }
-    @media (min-width: 640px) { .section-y { padding-block: var(--space-section); } }
-
-    .grain {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: var(--z-grain);
-      opacity: 0.045;
-      mix-blend-mode: overlay;
-      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
-      background-repeat: repeat;
-    }
-
-    .surface-base { position: relative; z-index: var(--z-base); }
-    .surface-elevated {
-      position: relative;
-      z-index: var(--z-elevated);
-      box-shadow: 0 1px 1px rgba(26,111,181,0.06), 0 8px 24px rgba(18,24,31,0.06);
-    }
-    .surface-floating {
-      position: relative;
-      z-index: var(--z-floating);
-      box-shadow: 0 2px 4px rgba(26,111,181,0.08), 0 18px 40px rgba(18,24,31,0.12), 0 40px 72px rgba(26,111,181,0.10);
-    }
-
-    /* Tailwind/Alpine `transition` = all — clamp to transform + opacity */
-    .transition,
-    .transition-all,
-    .cart-enter {
-      transition-property: transform, opacity;
-      transition-timing-function: var(--ease-spring);
-    }
-
-    a, button {
-      transition: transform 0.22s var(--ease-spring), opacity 0.22s var(--ease-spring);
-    }
-    a:focus-visible,
-    button:focus-visible,
-    input:focus-visible,
-    textarea:focus-visible {
-      outline: 2px solid var(--brand);
-      outline-offset: 3px;
-    }
-    a:active, button:active {
-      transform: scale(0.97);
-    }
-    a:not(.btn):not(.group):hover { opacity: 0.75; }
-
-    .btn {
-      position: relative;
-      isolation: isolate;
-      overflow: hidden;
-    }
-    .btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: #000;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.22s var(--ease-spring);
-    }
-    .btn:hover { opacity: 1; }
-    .btn:hover::after { opacity: 0.12; }
-    .btn:active::after { opacity: 0.2; }
-    .btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
-
-    .chip:hover { opacity: 0.78; }
-    .chip.is-on { opacity: 1; }
-    .chip.is-on:hover { opacity: 0.92; }
-
-    .card-lift {
-      transition: transform 0.28s var(--ease-spring), opacity 0.28s var(--ease-spring);
-    }
-    .card-lift:hover { transform: translateY(-4px); opacity: 1; }
-
-    .fade-up {
-      animation: fadeUp 1.25s var(--ease-reveal) both;
-    }
-    .fade-up-delay { animation-delay: 0.22s; }
-    .fade-up-delay-2 { animation-delay: 0.42s; }
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .media-zoom {
-      transition: transform 0.45s var(--ease-spring);
-    }
-    .group:hover .media-zoom {
-      transform: scale(1.05);
-    }
-
-    .cat-label-glass {
-      background: rgba(26, 111, 181, 0.72);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      box-shadow: 0 4px 12px rgba(18, 24, 31, 0.16);
-    }
-
-    .filter-tip {
-      position: relative;
-      display: inline-flex;
-      cursor: help;
-      vertical-align: middle;
-    }
-    .filter-tip::after {
-      content: attr(data-tip);
-      position: absolute;
-      bottom: calc(100% + 8px);
-      left: 50%;
-      transform: translateX(-50%);
-      width: max-content;
-      max-width: 240px;
-      padding: 8px 10px;
-      border-radius: 10px;
-      background: #12181f;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 400;
-      line-height: 1.45;
-      white-space: normal;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.15s;
-      z-index: 30;
-      box-shadow: 0 8px 24px rgba(18, 24, 31, 0.18);
-    }
-    .filter-tip:hover::after,
-    .filter-tip:focus-visible::after { opacity: 1; }
-
-    @media (prefers-reduced-motion: no-preference) {
-      .scroll-reveal {
-        opacity: 0;
-        transform: translateY(16px);
-        transition: opacity 1.15s var(--ease-reveal), transform 1.15s var(--ease-reveal);
-      }
-      .scroll-reveal.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-      .scroll-reveal-stagger.is-visible > * {
-        animation: fadeUp 1.1s var(--ease-reveal) both;
-      }
-      .scroll-reveal-stagger.is-visible > *:nth-child(1) { animation-delay: 0.08s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(2) { animation-delay: 0.18s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(3) { animation-delay: 0.28s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(4) { animation-delay: 0.38s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(5) { animation-delay: 0.48s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(6) { animation-delay: 0.58s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(7) { animation-delay: 0.68s; }
-      .scroll-reveal-stagger.is-visible > *:nth-child(8) { animation-delay: 0.78s; }
-
-      .cat-cascade:not(.is-visible) > a {
-        opacity: 0;
-        transform: translateY(22px) scale(0.985);
-      }
-      .cat-cascade.is-visible > a {
-        animation: catCascadeIn 1.2s var(--ease-reveal) both;
-      }
-      .cat-cascade.is-visible > a:nth-of-type(1) { animation-delay: 0ms; }
-      .cat-cascade.is-visible > a:nth-of-type(2) { animation-delay: 160ms; }
-      .cat-cascade.is-visible > a:nth-of-type(3) { animation-delay: 320ms; }
-      .cat-cascade.is-visible > a:nth-of-type(4) { animation-delay: 480ms; }
-      .cat-cascade.is-visible > a:nth-of-type(5) { animation-delay: 640ms; }
-      .cat-cascade.is-visible > a:nth-of-type(6) { animation-delay: 800ms; }
-      .cat-cascade.is-visible > a:nth-of-type(7) { animation-delay: 960ms; }
-      .cat-cascade.is-visible > a:nth-of-type(8) { animation-delay: 1120ms; }
-    }
-    @keyframes catCascadeIn {
-      from { opacity: 0; transform: translateY(22px) scale(0.985); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      .scroll-reveal { opacity: 1; transform: none; }
-      .cat-cascade > * { opacity: 1; transform: none; animation: none !important; }
-    }
-
-  </style>
+  <link rel="stylesheet" href="assets/site.css" />
 </head>
 <body
   class="font-sans text-ink antialiased leading-body"
@@ -290,7 +34,7 @@
   <!-- Header -->
   <header class="surface-floating sticky top-0 z-[40] border-b border-line/80 bg-white/85 backdrop-blur-md">
     <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-item py-item">
-      <a href="#" class="flex items-baseline gap-tight">
+      <a href="index.html" class="flex items-baseline gap-tight">
         <span class="font-display text-2xl font-semibold tracking-display text-ink">AeroClim</span>
         <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климатическая техника</span>
       </a>
@@ -298,16 +42,14 @@
       <nav class="hidden items-center gap-card text-sm font-medium text-mist md:flex">
         <a href="#catalog">Каталог</a>
         <a href="#categories">Типы</a>
-        <a href="#advantages">Преимущества</a>
-        <a href="#brands">Бренды</a>
+        <a href="about.html">О магазине</a>
       </nav>
 
       <div class="flex items-center gap-tight">
         <div class="relative">
-        <button
-          type="button"
+        <a
+          href="cart.html"
           class="btn inline-flex items-center gap-tight rounded-full bg-sky px-item py-tight text-sm font-medium text-white"
-          @click="cartOpen = true"
         >
           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 4.5h1.8l1.4 10.2h10.6l1.5-7.2H7.2" />
@@ -319,7 +61,7 @@
             class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 text-xs"
             x-text="cartCount"
           ></span>
-        </button>
+        </a>
         <div
           class="surface-floating absolute right-0 top-full z-[50] mt-tight whitespace-nowrap rounded-full bg-ink px-item py-tight text-sm text-white"
           x-show="toast"
@@ -349,8 +91,8 @@
       <nav class="flex flex-col gap-item text-sm font-medium">
         <a href="#catalog" @click="mobileNav = false">Каталог</a>
         <a href="#categories" @click="mobileNav = false">Типы</a>
-        <a href="#advantages" @click="mobileNav = false">Преимущества</a>
-        <a href="#brands" @click="mobileNav = false">Бренды</a>
+        <a href="about.html" @click="mobileNav = false">О магазине</a>
+        <a href="cart.html" @click="mobileNav = false">Корзина</a>
       </nav>
     </div>
   </header>
@@ -436,9 +178,8 @@
       <div class="cat-cascade grid grid-cols-2 gap-item sm:grid-cols-3 lg:grid-cols-4">
         <template x-for="cat in categories" :key="cat.title">
           <a
-            href="#catalog"
+            :href="categoryHref(cat)"
             class="group relative z-[10] aspect-[4/3] overflow-hidden rounded-2xl"
-            @click="resetFilters()"
           >
             <img :src="cat.img" :alt="cat.title" class="media-zoom h-full w-full object-cover" />
             <span
@@ -677,9 +418,9 @@
               <template x-for="p in filteredProducts" :key="p.id">
                 <article class="card-lift group flex flex-col overflow-hidden rounded-2xl border border-line/80 bg-white">
                   <div class="relative aspect-[3/2] overflow-hidden bg-white">
-                    <button type="button" class="h-full w-full" @click="openQuick(p)">
+                    <a :href="productHref(p)" class="block h-full w-full">
                       <img :src="p.img" :alt="p.name" class="media-zoom h-full w-full object-contain px-item py-tight" loading="lazy" />
-                    </button>
+                    </a>
                     <span
                       x-show="p.inverter"
                       class="absolute left-3 top-3 rounded-full bg-frost px-tight py-1 text-xs font-medium text-sky-dark"
@@ -695,9 +436,9 @@
                   </div>
                   <div class="flex flex-1 flex-col bg-paper p-card">
                     <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="p.brand"></p>
-                    <button type="button" class="mt-tight text-left" @click="openQuick(p)">
+                    <a :href="productHref(p)" class="mt-tight text-left">
                       <h3 class="text-base font-medium leading-snug" x-text="p.name"></h3>
-                    </button>
+                    </a>
                     <p class="mt-tight text-sm text-mist" x-text="'до ' + p.area + ' м²'"></p>
                     <div class="mt-auto flex items-end justify-between gap-item pt-block">
                       <p class="text-lg font-semibold tabular-nums" x-text="formatPrice(p.price)"></p>
@@ -795,7 +536,7 @@
     <section class="page-x section-y mx-auto max-w-6xl">
       <div class="grid gap-card lg:grid-cols-12 lg:items-center">
         <div class="scroll-reveal lg:col-span-5">
-          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky">О компании</p>
+          <p class="text-xs font-semibold uppercase tracking-[0.2em] text-sky"><a href="about.html">О компании</a></p>
           <h2 class="mt-item font-display text-3xl font-semibold sm:text-4xl">Комфорт под ключ</h2>
           <p class="mt-block text-mist">
             AeroClim — интернет-магазин кондиционеров и сплит-систем с установкой по Москве и области.
@@ -852,11 +593,15 @@
       <div>
         <p class="font-display text-2xl font-semibold tracking-display">AeroClim</p>
         <p class="mt-item text-sm text-white/60">
-          Магазин кондиционеров. Подбор, продажа и монтаж климатической техники.
+          Интернет-магазин кондиционеров и сплит-систем с установкой по Москве и области.
         </p>
       </div>
       <div class="text-sm">
-        <p class="font-medium">Контакты</p>
+        <p class="font-medium">Разделы</p>
+        <a href="#catalog" class="mt-item block text-white/70">Каталог</a>
+        <a href="about.html" class="mt-tight block text-white/70">О магазине</a>
+        <a href="cart.html" class="mt-tight block text-white/70">Корзина</a>
+        <p class="mt-item font-medium text-white">Контакты</p>
         <a href="tel:+78003026206" class="mt-item block text-white/70">8 (800) 302-62-06</a>
         <a href="tel:+74951283657" class="mt-tight block text-white/70">8 (495) 128-36-57</a>
         <a href="mailto:info@aeroclim.ru" class="mt-tight block text-white/70">info@aeroclim.ru</a>
@@ -868,7 +613,7 @@
       </div>
     </div>
     <div class="border-t border-white/10 px-item py-item text-center text-xs text-white/40 sm:px-card">
-      Макет главной страницы · AeroClim
+      AeroClim · климат уюта
     </div>
   </footer>
 
@@ -929,13 +674,12 @@
             <span class="text-mist">Итого</span>
             <span class="text-lg font-semibold tabular-nums" x-text="formatPrice(cartTotal)"></span>
           </div>
-          <button
-            type="button"
-            class="btn w-full rounded-full bg-sky py-item text-sm font-semibold text-white"
-            @click="checkoutStep = 2"
+          <a
+            href="checkout.html"
+            class="btn block w-full rounded-full bg-sky py-item text-center text-sm font-semibold text-white"
           >
             Оформить заказ
-          </button>
+          </a>
         </div>
       </div>
 
@@ -1051,13 +795,12 @@
               >
                 В корзину
               </button>
-              <button
-                type="button"
+              <a
+                :href="productHref(quickView)"
                 class="btn rounded-full border border-line px-card py-item text-sm font-medium text-ink"
-                @click="addToCart(quickView); closeQuick(); cartOpen = true"
               >
-                Оформить
-              </button>
+                На страницу
+              </a>
             </div>
           </div>
         </div>
@@ -1065,503 +808,7 @@
     </div>
   </div>
 
-  <script>
-    function store() {
-      const img = (path) => `https://carata.ru${path}`;
-      const u = (id) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=800&q=80`;
-
-      const deriveSeries = (p) => {
-        const n = p.name;
-        if (p.brand === 'AUX') {
-          if (n.includes('/FJ-')) return 'AUX Classic';
-          if (n.includes('/CB-')) return 'Comfort Bit';
-          return 'AUX Standard';
-        }
-        if (p.brand === 'Ecoclima') {
-          if (n.includes('07QCW')) return 'QC Wi-Fi';
-          if (n.includes('HE')) return 'HE Series';
-          if (n.includes('CH')) return 'Comfort Home';
-          if (n.includes('TC')) return 'Turbo Cool';
-          if (n.includes('AX')) return 'AX Inverter';
-          return 'Inverter Pro';
-        }
-        if (p.brand === 'Gree') return 'Pular Inverter';
-        if (p.brand === 'Electrolux') return 'Air Stream';
-        if (p.brand === 'Rovex') {
-          if (n.includes('Megapolis')) return 'Megapolis';
-          if (n.includes('Rich')) return 'Rich';
-          return 'STAR';
-        }
-        if (p.brand === 'Thaicon') return 'TL-RWB';
-        return 'Standard';
-      };
-
-      const defaultWifi = (p) => {
-        if (p.name.includes('QCW') || p.name.includes('PULAR')) return 'Встроенный';
-        if (p.inverter && p.price >= 32000) return 'Поддерживается';
-        return 'Нет';
-      };
-
-      const defaultCountry = (brand) => ({ Thaicon: 'Таиланд' }[brand] || 'Китай');
-
-      const enrich = (p) => ({
-        ...p,
-        series: p.series || deriveSeries(p),
-        wifi: p.wifi || defaultWifi(p),
-        country: p.country || defaultCountry(p.brand),
-      });
-
-      return {
-        cartOpen: false,
-        quickView: null,
-        mobileNav: false,
-        checkoutStep: 1,
-        toast: '',
-        filterBrand: '',
-        filterSeries: '',
-        filterModel: '',
-        filterArea: '',
-        filterInverter: '',
-        filterColor: '',
-        filterEnergy: '',
-        filterWifi: '',
-        filterCountry: '',
-        activeQuick: 'all',
-        heroTip: '',
-        heroTipX: 0,
-        heroTipY: 0,
-        heroTipAbove: false,
-        filtersOpen: false,
-        modelListExpanded: false,
-        modelTagsLimit: 6,
-        order: { name: '', phone: '', address: '', install: true },
-        cart: [],
-
-        quickFilters: [
-          { id: 'all', label: 'Все', brand: '', area: '', inverter: '', tip: 'Все модели каталога без ограничений по типу компрессора и площади.' },
-          { id: 'inv', label: 'С инвертором', brand: '', area: '', inverter: 'yes', tip: 'Инвертор плавно регулирует мощность — тише работает, меньше расходует электричество и точнее держит температуру.' },
-          { id: 'onoff', label: 'Без инвертора', brand: '', area: '', inverter: 'no', tip: 'Классический on/off: включается на полную мощность. Проще и доступнее — подходит для редкого использования.' },
-          { id: 'a23', label: 'До 23 м²', brand: '', area: 23, inverter: '', tip: 'Спальня, детская или небольшой кабинет до ~23 м² при высоте потолков до 2,7 м.' },
-          { id: 'a27', label: 'До 27 м²', brand: '', area: 27, inverter: '', tip: 'Средняя комната, гостиная-студия или кухня-гостиная до ~27 м².' },
-          { id: 'a36', label: 'До 36 м²', brand: '', area: 36, inverter: '', tip: 'Просторная гостиная, зал или open space до ~36 м² — нужна более мощная сплит-система.' },
-        ],
-
-        categories: [
-          { title: 'Настенные', img: 'assets/categories/cat-nastennye.png' },
-          { title: 'Мульти-сплит', img: 'assets/categories/cat-multisplit.png' },
-          { title: 'Мобильные', img: 'assets/categories/cat-mobilnye.png' },
-          { title: 'Кассетные', img: 'assets/categories/cat-kassetnye.png' },
-          { title: 'Канальные', img: 'assets/categories/cat-kanalnye.png' },
-          { title: 'Колонные', img: 'assets/categories/cat-kolonnye.png' },
-          { title: 'Тепловые насосы', img: 'assets/categories/cat-teplovye-nasosy.png' },
-          { title: 'VRF-системы', img: 'assets/categories/cat-vrf.png' },
-        ],
-
-        allBrands: [
-          'Ecoclima', 'AUX', 'Casarte', 'Ballu', 'Gree', 'Haier', 'LG', 'Samsung',
-          'Mitsubishi Electric', 'Panasonic', 'Toshiba', 'Electrolux',
-          'Royal Clima', 'Dahatsu', 'Hisense', 'Funai',
-        ],
-
-        products: [
-          {
-            id: 1, brand: 'Ecoclima', name: 'Ecoclima ECW-HE07/BB-4R2',
-            price: 19900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
-          },
-          {
-            id: 2, brand: 'Ecoclima', name: 'Ecoclima ECW-CH09/AA-4R1',
-            price: 19900, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
-          },
-          {
-            id: 3, brand: 'Ecoclima', name: 'Ecoclima ECW-HE09/BB-4R2',
-            price: 22100, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
-          },
-          {
-            id: 4, brand: 'Ecoclima', name: 'Ecoclima ECW/I-AX07/FB-4R1',
-            price: 23900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/86a/kvjca0oa7mjtwvxv9hbeuvb1xildyiuv/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ax07_fb_4r1_20m.jpg'),
-          },
-          {
-            id: 5, brand: 'Ecoclima', name: 'Ecoclima ECW/I-CH07/AA-4R1 (White)',
-            price: 23900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
-          },
-          {
-            id: 6, brand: 'Ecoclima', name: 'Ecoclima ECW/I-07QCW',
-            price: 24700, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/384/eyv0yi5u67zw94qzyo0ksh621fpwiwhc/267_267_1/nastennyy_vnutrenniy_blok_multi_split_sistemy_ecoclima_cmwm_h09_4r2_white_25m.jpg'),
-          },
-          {
-            id: 7, brand: 'Ecoclima', name: 'Ecoclima ECW-CH12/AA-4R1',
-            price: 27700, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
-          },
-          {
-            id: 8, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE07/AA-4R2',
-            price: 27900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/4ec/drqt92l7b822qjlokfouzq9i5ohmpq0i/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_aa_4r2_20m.jpg'),
-          },
-          {
-            id: 9, brand: 'Ecoclima', name: 'Ecoclima ECW/I-CH09/AA-4R1 (White)',
-            price: 27900, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
-          },
-          {
-            id: 10, brand: 'Ecoclima', name: 'Ecoclima ECW-TC09/AA-4R1',
-            price: 22400, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/b72/09xnrt96it4t8wo5it3m1mortsn4nv5d/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_tc09_aa_4r2_25m.jpg'),
-          },
-          {
-            id: 11, brand: 'Ecoclima', name: 'Ecoclima ECW-HE12/AA-4R2',
-            price: 28200, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/4ec/drqt92l7b822qjlokfouzq9i5ohmpq0i/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_aa_4r2_20m.jpg'),
-          },
-          {
-            id: 12, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE07/BB-4R2',
-            price: 28700, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
-          },
-          {
-            id: 13, brand: 'Ecoclima', name: 'Ecoclima ECW/I-AX12/FB-4R1',
-            price: 29400, area: 35, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/86a/kvjca0oa7mjtwvxv9hbeuvb1xildyiuv/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ax07_fb_4r1_20m.jpg'),
-          },
-          {
-            id: 14, brand: 'Ecoclima', name: 'Ecoclima ECW-TC12/AA-4R1',
-            price: 30900, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/b72/09xnrt96it4t8wo5it3m1mortsn4nv5d/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_tc09_aa_4r2_25m.jpg'),
-          },
-          {
-            id: 15, brand: 'Ecoclima', name: 'Ecoclima ECW-HE12/BB-4R2',
-            price: 30900, area: 35, inverter: false, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
-          },
-          {
-            id: 16, brand: 'Electrolux', name: 'Electrolux EACS-07HP/N3_23Y_in',
-            price: 29549, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/bc3/0f6z80a9ca8qf46fkqm5ou6clrc6w20v/267_267_1/nastennyy_konditsioner_electrolux_eacs_07hp_n3_23y_in_20m.jpg'),
-          },
-          {
-            id: 17, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE09/BB-4R2',
-            price: 31700, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
-          },
-          {
-            id: 18, brand: 'Ecoclima', name: 'Ecoclima ECW/I-CH12/AA-4R1 (White)',
-            price: 32900, area: 35, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/de3/ud7xx4j0en2mkx6fuymu3t7s3jjpp5b7/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_ch07_aa_4r1_white_20m.jpg'),
-          },
-          {
-            id: 19, brand: 'Electrolux', name: 'Electrolux EACS-09HP/N3_23Y_in',
-            price: 31989, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/bc3/0f6z80a9ca8qf46fkqm5ou6clrc6w20v/267_267_1/nastennyy_konditsioner_electrolux_eacs_07hp_n3_23y_in_20m.jpg'),
-          },
-          {
-            id: 20, brand: 'AUX', name: 'AUX ASW-H09A4/FJ-BR1',
-            price: 27600, area: 25, inverter: false, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/79e/34ykp22pp29amllqa6s1os7bzh9vfzp6/267_267_1/nastennyy_konditsioner_aux_asw_h07b4_fj_br1_20m.jpg'),
-          },
-          {
-            id: 21, brand: 'Ecoclima', name: 'Ecoclima ECW/I-TC09/AA-4R2',
-            price: 34900, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/b72/09xnrt96it4t8wo5it3m1mortsn4nv5d/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_tc09_aa_4r2_25m.jpg'),
-          },
-          {
-            id: 22, brand: 'AUX', name: 'AUX ASW-H07A4/CB-R2DI',
-            price: 29900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/1e9/wh8bk9nlh2ckdbh80onnayowna2sqqhc/267_267_1/nastennyy_konditsioner_aux_asw_h07a4_cb_r2di_20m.jpg'),
-          },
-          {
-            id: 23, brand: 'Ecoclima', name: 'Ecoclima ECW/I-HE12/BB-4R2',
-            price: 36900, area: 35, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '23 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/ed0/pqdhwfq9cu9mgak9aejkgsxtecqmafpj/267_267_1/nastennyy_konditsioner_ecoclima_ecw_i_he07_bb_4r2_20m.jpg'),
-          },
-          {
-            id: 24, brand: 'AUX', name: 'AUX ASW-H09A4/CB-R2DI',
-            price: 31900, area: 25, inverter: true, cooling: '2.5 кВт', heat: '2.8 кВт',
-            noise: '21 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/1e9/wh8bk9nlh2ckdbh80onnayowna2sqqhc/267_267_1/nastennyy_konditsioner_aux_asw_h07a4_cb_r2di_20m.jpg'),
-          },
-          {
-            id: 25, brand: 'Gree', name: 'Gree PULAR Inverter Eco GWH07AGAXA-K6DNA4E',
-            price: 60000, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Графит',
-            img: img('/upload/resize_cache/iblock/a13/bj46es0n4q8ldaduo0jnr8xe2ax5njg1/267_267_1/nastennaya_split_sistema_gree_pular_inverter_matte_gwh09agaxa_k6dna1d.jpeg'),
-          },
-          {
-            id: 26, brand: 'Thaicon', name: 'Thaicon TL-RWB20-VR / TL-ROB20-VR',
-            price: 32500, area: 36, inverter: true, cooling: '3.5 кВт', heat: '3.8 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/0a6/vby4q701vccf9zcr24d17ehd7dxjle6v/267_267_1/thaicon_tl_rwb100_na_tl_rob100_na.jpg'),
-          },
-          {
-            id: 27, brand: 'Rovex', name: 'Rovex RS-07CBS4 Megapolis',
-            price: 22900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/d15/p0nsvp9hmbyfnpje5o2jq3vd8tnmcg7t/267_267_1/rovex_rs_07cbs4_megapolis.jpg'),
-          },
-          {
-            id: 28, brand: 'Rovex', name: 'Rovex RS-07MUIN1 Rich',
-            price: 27900, area: 20, inverter: true, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A++', refrigerant: 'R32', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/13e/9zpcha149br1hr1k655xadmsqhn77biz/267_267_1/rovex_rs_07muin1_rich.jpg'),
-          },
-          {
-            id: 29, brand: 'Rovex', name: 'Rovex ABS-07HE STAR N',
-            price: 22900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/463/1a16kresu9dwkfz6jcqs7jjj2iondak6/267_267_1/rovex_ast_09he_mira_n.jpg'),
-          },
-          {
-            id: 30, brand: 'Rovex', name: 'Rovex ABS-07HE STAR S',
-            price: 23900, area: 20, inverter: false, cooling: '2.1 кВт', heat: '2.2 кВт',
-            noise: '22 дБ', energy: 'A', refrigerant: 'R410A', color: 'Белый',
-            img: img('/upload/resize_cache/iblock/463/1a16kresu9dwkfz6jcqs7jjj2iondak6/267_267_1/rovex_ast_09he_mira_n.jpg'),
-          },
-        ].map(enrich),
-
-        get activeFilterCount() {
-          let n = 0;
-          if (this.filterBrand) n++;
-          if (this.filterSeries) n++;
-          if (this.filterModel) n++;
-          if (this.filterArea) n++;
-          if (this.filterInverter) n++;
-          if (this.filterColor) n++;
-          if (this.filterEnergy) n++;
-          if (this.filterWifi) n++;
-          if (this.filterCountry) n++;
-          return n;
-        },
-        get brands() {
-          return [...new Set(this.products.map((p) => p.brand))];
-        },
-        get brandSeries() {
-          if (!this.filterBrand) return [];
-          return [...new Set(this.products.filter((p) => p.brand === this.filterBrand).map((p) => p.series))].sort();
-        },
-        get brandModels() {
-          if (!this.filterBrand) return [];
-          let list = this.products.filter((p) => p.brand === this.filterBrand);
-          if (this.filterSeries) list = list.filter((p) => p.series === this.filterSeries);
-          return [...new Set(list.map((p) => p.name))];
-        },
-        get visibleBrandModels() {
-          const all = this.brandModels;
-          if (this.modelListExpanded || all.length <= this.modelTagsLimit) return all;
-          const visible = all.slice(0, this.modelTagsLimit);
-          if (this.filterModel && !visible.includes(this.filterModel)) {
-            return [...visible, this.filterModel];
-          }
-          return visible;
-        },
-        get areas() {
-          return [23, 27, 36];
-        },
-        get colors() {
-          return [...new Set(this.products.map((p) => p.color))].sort();
-        },
-        get energyClasses() {
-          return [...new Set(this.products.map((p) => p.energy))].sort((a, b) => b.length - a.length);
-        },
-        get wifiOptions() {
-          return ['Встроенный', 'Поддерживается', 'Нет'];
-        },
-        get countries() {
-          return [...new Set(this.products.map((p) => p.country))].sort();
-        },
-        get filteredProducts() {
-          return this.products.filter((p) => {
-            if (this.filterBrand && p.brand !== this.filterBrand) return false;
-            if (this.filterSeries && p.series !== this.filterSeries) return false;
-            if (this.filterModel && p.name !== this.filterModel) return false;
-            if (this.filterArea && p.area > Number(this.filterArea)) return false;
-            if (this.filterInverter === 'yes' && !p.inverter) return false;
-            if (this.filterInverter === 'no' && p.inverter) return false;
-            if (this.filterColor && p.color !== this.filterColor) return false;
-            if (this.filterEnergy && p.energy !== this.filterEnergy) return false;
-            if (this.filterWifi && p.wifi !== this.filterWifi) return false;
-            if (this.filterCountry && p.country !== this.filterCountry) return false;
-            return true;
-          });
-        },
-        get cartCount() {
-          return this.cart.reduce((s, i) => s + i.qty, 0);
-        },
-        get cartTotal() {
-          return this.cart.reduce((s, i) => s + i.price * i.qty, 0);
-        },
-
-        formatPrice(n) {
-          return new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-        },
-        specsOf(p) {
-          return [
-            ['Производитель', p.brand],
-            ['Серия', p.series],
-            ['Площадь', 'до ' + p.area + ' м²'],
-            ['Компрессор', p.inverter ? 'Инверторный' : 'Обычный on/off'],
-            ['Охлаждение', p.cooling],
-            ['Обогрев', p.heat],
-            ['Шум внутр. блока', p.noise],
-            ['Класс энергии', p.energy],
-            ['Wi‑Fi', p.wifi],
-            ['Страна сборки', p.country],
-            ['Хладагент', p.refrigerant],
-            ['Цвет', p.color],
-            ['Тип', 'Настенная сплит-система'],
-          ];
-        },
-        openQuick(p) {
-          this.quickView = p;
-        },
-        closeQuick() {
-          this.quickView = null;
-        },
-        setBrand(b) {
-          this.filterBrand = b;
-          this.filterSeries = '';
-          this.filterModel = '';
-          this.modelListExpanded = false;
-        },
-        showHeroTip(e, tip) {
-          const r = e.currentTarget.getBoundingClientRect();
-          this.heroTip = tip;
-          this.heroTipX = r.left + r.width / 2;
-          const below = r.bottom + 10;
-          if (below + 96 > window.innerHeight - 8) {
-            this.heroTipY = r.top - 10;
-            this.heroTipAbove = true;
-          } else {
-            this.heroTipY = below;
-            this.heroTipAbove = false;
-          }
-        },
-        hideHeroTip() {
-          this.heroTip = '';
-          this.heroTipAbove = false;
-        },
-        applyQuick(chip) {
-          this.hideHeroTip();
-          this.activeQuick = chip.id;
-          this.filterBrand = chip.brand;
-          this.filterSeries = '';
-          this.filterModel = '';
-          this.filterArea = chip.area || '';
-          this.filterInverter = chip.inverter;
-          document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-        },
-        resetFilters() {
-          this.filterBrand = '';
-          this.filterSeries = '';
-          this.filterModel = '';
-          this.filterArea = '';
-          this.filterInverter = '';
-          this.filterColor = '';
-          this.filterEnergy = '';
-          this.filterWifi = '';
-          this.filterCountry = '';
-          this.activeQuick = 'all';
-          this.modelListExpanded = false;
-        },
-        addToCart(p) {
-          const existing = this.cart.find((i) => i.id === p.id);
-          if (existing) existing.qty += 1;
-          else this.cart.push({ ...p, qty: 1 });
-          this.showToast('Товар добавлен в корзину');
-        },
-        changeQty(id, delta) {
-          const item = this.cart.find((i) => i.id === id);
-          if (!item) return;
-          item.qty += delta;
-          if (item.qty <= 0) this.removeFromCart(id);
-        },
-        removeFromCart(id) {
-          this.cart = this.cart.filter((i) => i.id !== id);
-        },
-        submitOrder() {
-          this.checkoutStep = 3;
-          this.cart = [];
-        },
-        finishOrder() {
-          this.checkoutStep = 1;
-          this.cartOpen = false;
-          this.order = { name: '', phone: '', address: '', install: true };
-        },
-        showToast(msg) {
-          this.toast = msg;
-          clearTimeout(this._toastTimer);
-          this._toastTimer = setTimeout(() => { this.toast = ''; }, 3000);
-        },
-      };
-    }
-  </script>
-  <script>
-    (() => {
-      const markVisible = (el) => el.classList.add('is-visible');
-
-      const boot = () => {
-        const els = document.querySelectorAll('.scroll-reveal, .scroll-reveal-stagger, .cat-cascade');
-        if (!els.length) return;
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-          els.forEach(markVisible);
-          return;
-        }
-        if (!('IntersectionObserver' in window)) {
-          els.forEach(markVisible);
-          return;
-        }
-        const io = new IntersectionObserver(
-          (entries) => {
-            entries.forEach(({ isIntersecting, target }) => {
-              if (!isIntersecting) return;
-              markVisible(target);
-              io.unobserve(target);
-            });
-          },
-          { threshold: 0, rootMargin: '0px 0px -40px 0px' }
-        );
-        els.forEach((el) => {
-          io.observe(el);
-          const r = el.getBoundingClientRect();
-          if (r.top < window.innerHeight - 40 && r.bottom > 40) markVisible(el);
-        });
-      };
-
-      const start = () => requestAnimationFrame(boot);
-      document.addEventListener('alpine:initialized', start, { once: true });
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', start, { once: true });
-      } else {
-        start();
-      }
-    })();
-  </script>
+  <script src="assets/store.js"></script>
+  <script src="assets/reveal.js"></script>
 </body>
 </html>
