@@ -235,9 +235,13 @@
             <div
               x-show="heroTip"
               x-cloak
-              x-transition.opacity
-              class="pointer-events-none fixed z-[70] max-w-[260px] rounded-xl bg-ink px-3 py-2.5 text-left text-xs leading-snug text-white shadow-[0_10px_28px_rgba(18,24,31,0.2)]"
-              :class="heroTipAbove ? '-translate-x-1/2 -translate-y-full' : '-translate-x-1/2'"
+              x-transition:enter="hero-tip-enter"
+              x-transition:enter-start="hero-tip-enter-start"
+              x-transition:enter-end="hero-tip-enter-end"
+              x-transition:leave="hero-tip-leave"
+              x-transition:leave-start="hero-tip-leave-start"
+              x-transition:leave-end="hero-tip-leave-end"
+              class="hero-tip pointer-events-none fixed z-[70] max-w-[260px] rounded-xl bg-ink px-3 py-2.5 text-left text-xs leading-snug text-white shadow-[0_10px_28px_rgba(18,24,31,0.2)]"
               :style="'left:' + heroTipX + 'px;top:' + heroTipY + 'px;'"
               x-text="heroTip"
             ></div>
@@ -301,7 +305,7 @@
               <span class="text-sm text-sky" x-text="filtersOpen ? 'Свернуть' : 'Показать'"></span>
             </button>
             <div
-              class="space-y-card overflow-y-auto p-card pt-0 lg:max-h-[calc(100vh-7rem)] lg:p-card lg:pt-card"
+              class="filter-panel space-y-card overflow-x-hidden overflow-y-auto p-card pt-0 lg:max-h-[calc(100vh-7rem)] lg:p-card lg:pt-card"
               :class="filtersOpen ? 'block' : 'hidden lg:block'"
             >
             <div>

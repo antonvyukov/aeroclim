@@ -596,14 +596,8 @@
           const r = e.currentTarget.getBoundingClientRect();
           this.heroTip = tip;
           this.heroTipX = r.left + r.width / 2;
-          const below = r.bottom + 10;
-          if (below + 96 > window.innerHeight - 8) {
-            this.heroTipY = r.top - 10;
-            this.heroTipAbove = true;
-          } else {
-            this.heroTipY = below;
-            this.heroTipAbove = false;
-          }
+           this.heroTipY = r.bottom + 10;
+           this.heroTipAbove = false;
         },
         hideHeroTip() {
           this.heroTip = '';

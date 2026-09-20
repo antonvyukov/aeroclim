@@ -18,6 +18,10 @@ server {
     ssl_certificate_key /home/amristar/.local/share/aeroclim-https/aeroclim-key.pem;
 
     client_max_body_size 64m;
+    etag off;
+    add_header Cache-Control "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0" always;
+    add_header Pragma "no-cache" always;
+    add_header Expires "0" always;
 
     location / {
         try_files $uri $uri/ /index.html;
