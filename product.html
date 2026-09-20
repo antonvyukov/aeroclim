@@ -15,12 +15,13 @@
 </head>
 <body class="font-sans text-ink antialiased leading-body" x-data="store()">
   <div class="grain" aria-hidden="true"></div>
-  <div class="surface-base border-b border-line/80 bg-white/70 backdrop-blur-sm">
+  <div class="support-bar surface-base relative z-[60] border-b border-line/80 bg-white/70 backdrop-blur-sm">
     <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-card py-tight text-sm text-mist">
       <p class="hidden sm:block">Ежедневно с 08:00 до 20:00 · Москва и МО</p>
       <p class="sm:hidden">08:00–20:00</p>
       <div class="flex items-center gap-item">
         <a href="tel:+78003026206" class="font-medium text-ink">8 (800) 302-62-06</a>
+        <div class="relative hidden sm:block"><button type="button" class="inline-flex items-center gap-tight text-mist" @click="supportOpen = !supportOpen" @click.outside="supportOpen = false" :aria-expanded="supportOpen" aria-label="Поддержка 24/7"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" d="M4 14v-2a8 8 0 0 1 16 0v2" /><path stroke-linecap="round" d="M4 14h2v4H4a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2Zm16 0h-2v4h2a2 2 0 0 0 2-2v0a2 2 0 0 0-2-2Z" /><path stroke-linecap="round" d="M12 20h2" /></svg><span>24/7</span></button><div x-show="supportOpen" x-cloak x-transition.opacity class="surface-floating absolute right-0 top-full z-[60] mt-tight w-52 rounded-2xl border border-line/80 bg-white p-tight text-sm shadow-floating"><p class="px-item py-tight font-medium text-ink">Свяжитесь с нами</p><a href="tel:+78003026206" class="block rounded-xl px-item py-tight text-mist hover:bg-frost">Обратный звонок</a><a href="https://t.me/aeroclim" class="block rounded-xl px-item py-tight text-mist hover:bg-frost">Telegram</a><a href="https://max.ru/" class="block rounded-xl px-item py-tight text-mist hover:bg-frost">Max</a></div></div>
         <a href="mailto:info@aeroclim.ru" class="hidden md:inline">info@aeroclim.ru</a>
       </div>
     </div>
@@ -28,10 +29,21 @@
 
   <header class="surface-floating sticky top-0 z-[40] border-b border-line/80 bg-white/85 backdrop-blur-md">
     <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-item py-item">
-      <a href="index.html" class="flex items-baseline gap-tight">
+      <a href="index.html" class="flex shrink-0 flex-col leading-none">
         <span class="font-display text-2xl font-semibold tracking-display text-ink">AeroClim</span>
-        <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климатическая техника</span>
+        <span class="mt-1 text-[9px] uppercase tracking-[0.18em] text-mist">климатическая техника</span>
       </a>
+      <div class="relative hidden min-w-0 flex-1 md:block md:max-w-md">
+        <label class="sr-only" for="site-search">Поиск по каталогу</label>
+        <div class="search-field flex items-center rounded-full border border-line bg-paper/70 px-item py-tight text-mist">
+          <iconify-icon icon="solar:magnifer-linear" width="17" height="17" class="mr-tight"></iconify-icon>
+          <input id="site-search" type="search" x-model="searchQuery" placeholder="Что вы ищите?" class="w-full bg-transparent text-sm text-ink outline-none placeholder:text-mist/70" autocomplete="off" />
+        </div>
+        <div x-show="searchQuery.trim()" x-cloak class="surface-floating absolute left-0 right-0 top-full z-[60] mt-tight overflow-hidden rounded-2xl border border-line/80 bg-white shadow-floating">
+          <template x-if="searchResults.length"><div><template x-for="p in searchResults" :key="'search-'+p.id"><a :href="productHref(p)" class="block border-b border-line/60 px-item py-tight last:border-0 hover:bg-frost"><span class="block truncate text-sm font-medium text-ink" x-text="p.name"></span><span class="block text-xs text-mist" x-text="'до ' + p.area + ' м² · ' + formatPrice(p.price)"></span></a></template></div></template>
+          <p x-show="!searchResults.length" class="px-item py-card text-sm text-mist">Ничего не найдено</p>
+        </div>
+      </div>
       <nav class="hidden items-center gap-card text-sm font-medium text-mist md:flex">
         <div class="relative" @mouseenter="catalogOpen = true" @mouseleave="catalogOpen = false">
           <a href="index.html#catalog" class="nav-keep inline-flex items-center gap-1">Каталог <span aria-hidden="true">▾</span></a>
@@ -44,14 +56,16 @@
             </div>
           </div>
         </div>
-        <a href="about.html">О магазине</a>
+        <div class="relative" @mouseenter="aboutOpen = true" @mouseleave="aboutOpen = false"><a href="about.html" class="nav-keep inline-flex items-center gap-1">О магазине <span aria-hidden="true">▾</span></a><div class="absolute left-0 top-full z-[50] pt-tight" x-show="aboutOpen" x-cloak><div class="nav-drop min-w-[190px] rounded-2xl border border-line/80 bg-white p-tight shadow-floating"><a href="about.html" class="block rounded-xl px-item py-tight">О магазине</a><a href="works.html" class="block rounded-xl px-item py-tight text-ink">Наши работы</a></div></div></div>
         <a href="delivery.html">Доставка</a>
         <a href="contacts.html">Контакты</a>
       </nav>
-      <div class="flex items-center gap-tight">
+       <div class="header-actions flex items-center gap-tight">
+         <a href="favorites.html" class="header-action"><span class="header-action-icon"><iconify-icon icon="solar:heart-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="favoriteCount" x-text="favoriteCount"></span></span><span>Избранное</span></a>
+         <a href="compare.html" class="header-action"><span class="header-action-icon"><iconify-icon icon="solar:sort-horizontal-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="compareCount" x-text="compareCount"></span></span><span>Сравнить</span></a>
         <div class="relative">
           <a href="cart.html" class="btn inline-flex items-center gap-tight rounded-full bg-sky px-item py-tight text-sm font-medium text-white">
-            <span class="hidden sm:inline">Корзина</span>
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 4.5h1.8l1.4 10.2h10.6l1.5-7.2H7.2" /><circle cx="9.2" cy="18.5" r="1.2" /><circle cx="16.2" cy="18.5" r="1.2" /></svg>
             <span class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 text-xs" x-text="cartCount"></span>
           </a>
           <div class="surface-floating absolute right-0 top-full z-[50] mt-tight whitespace-nowrap rounded-full bg-ink px-item py-tight text-sm text-white" x-show="toast" x-cloak x-transition.opacity x-text="toast"></div>
@@ -61,6 +75,7 @@
         </button>
       </div>
     </div>
+    <div class="page-x pb-item md:hidden"><input type="search" x-model="searchQuery" placeholder="Что вы ищите?" class="mb-item w-full rounded-full border border-line bg-paper/70 px-item py-tight text-sm text-ink outline-none placeholder:text-mist/70" autocomplete="off" /><div x-show="searchQuery.trim()" x-cloak class="surface-floating mb-item overflow-hidden rounded-2xl border border-line/80 bg-white shadow-floating"><template x-for="p in searchResults" :key="'mobile-search-'+p.id"><a :href="productHref(p)" class="block border-b border-line/60 px-item py-tight last:border-0 hover:bg-frost"><span class="block truncate text-sm font-medium text-ink" x-text="p.name"></span><span class="block text-xs text-mist" x-text="'до ' + p.area + ' м² · ' + formatPrice(p.price)"></span></a></template><p x-show="!searchResults.length" class="px-item py-card text-sm text-mist">Ничего не найдено</p></div></div>
     <div class="border-t border-line px-item py-item md:hidden" x-show="mobileNav" x-cloak x-transition.opacity>
       <nav class="flex flex-col gap-item text-sm font-medium">
         <a href="index.html#catalog" @click="mobileNav = false">Все модели</a>
@@ -68,9 +83,11 @@
           <a :href="categoryHref(c)" class="text-mist" @click="mobileNav = false" x-text="c.title"></a>
         </template>
         <a href="about.html" @click="mobileNav = false">О магазине</a>
+        <a href="works.html" class="pl-item text-sky" @click="mobileNav = false">Наши работы</a>
         <a href="delivery.html" @click="mobileNav = false">Доставка</a>
         <a href="contacts.html" @click="mobileNav = false">Контакты</a>
-        <a href="cart.html" @click="mobileNav = false">Корзина</a>
+         <a href="favorites.html" @click="mobileNav = false">Избранное</a>
+         <a href="compare.html" @click="mobileNav = false">Сравнить</a>
       </nav>
     </div>
   </header>
@@ -83,27 +100,115 @@
         <span x-text="currentProduct.name"></span>
       </p>
       <div class="mt-block grid gap-block lg:grid-cols-12">
-        <div class="fade-up overflow-hidden rounded-[1.6rem] border border-line/80 bg-white lg:col-span-6">
-          <img :src="currentProduct.img" :alt="currentProduct.name" class="aspect-[4/3] w-full object-contain p-card" />
-        </div>
+         <div class="fade-up self-start overflow-hidden rounded-[1.6rem] border border-line/80 bg-white lg:col-span-6">
+            <button type="button" class="product-main-image flex aspect-[4/3] w-full items-center justify-center bg-white p-card" @click="openProductLightbox()" :aria-label="'Открыть галерею товара: ' + currentProduct.name">
+              <img :src="selectedProductImage || productGallery[0]" :alt="currentProduct.name" class="h-full w-full object-contain" />
+            </button>
+           <div class="product-gallery border-t border-line/80 bg-paper p-item">
+             <button x-show="galleryOverflow" type="button" class="gallery-arrow gallery-arrow-left" @click="scrollGallery(-1)" aria-label="Предыдущие фото"><iconify-icon icon="solar:alt-arrow-left-linear" width="17" height="17"></iconify-icon></button>
+             <div id="product-gallery-track" class="product-gallery-track">
+               <template x-for="(image, index) in productGallery" :key="'gallery-'+index">
+                  <button type="button" class="gallery-thumb shrink-0 overflow-hidden rounded-xl border bg-white p-tight" :class="selectedProductImageIndex === index ? 'is-selected' : ''" @click="selectProductImage(index)" :aria-label="'Фото ' + (index + 1)">
+                   <img :src="image" :alt="currentProduct.name + ', фото ' + (index + 1)" class="h-full w-full object-contain" />
+                 </button>
+               </template>
+             </div>
+             <button x-show="galleryOverflow" type="button" class="gallery-arrow gallery-arrow-right" @click="scrollGallery(1)" aria-label="Следующие фото"><iconify-icon icon="solar:alt-arrow-right-linear" width="17" height="17"></iconify-icon></button>
+           </div>
+         </div>
         <div class="fade-up fade-up-delay lg:col-span-6">
           <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="currentProduct.brand"></p>
           <h1 class="mt-tight font-display text-3xl font-semibold sm:text-4xl" x-text="currentProduct.name"></h1>
           <p class="mt-item text-sm text-mist" x-text="typeTitle(currentProduct.type) + ' · до ' + currentProduct.area + ' м²'"></p>
           <p class="mt-card text-3xl font-semibold tabular-nums" x-text="formatPrice(currentProduct.price)"></p>
           <p class="mt-item text-sm text-mist">Доставка 1 000 ₽ · гарантия 36 месяцев на работы и оборудование</p>
-          <div class="mt-block flex flex-wrap gap-tight">
-            <button type="button" class="btn rounded-full bg-sky px-card py-item text-sm font-semibold text-white" @click="addToCart(currentProduct)">В корзину</button>
-            <a href="checkout.html" class="btn rounded-full border border-line px-card py-item text-sm font-medium text-ink" @click="addToCart(currentProduct)">Купить сейчас</a>
+             <div class="mt-block flex flex-wrap items-center gap-tight">
+              <button type="button" class="product-action-icon rounded-full border border-line p-item" :class="isFavorite(currentProduct.id) ? 'is-active' : ''" @click="toggleFavorite(currentProduct)" :aria-label="isFavorite(currentProduct.id) ? 'Убрать из избранного' : 'Добавить в избранное'"><iconify-icon :icon="isFavorite(currentProduct.id) ? 'solar:heart-bold' : 'solar:heart-linear'" width="21" height="21"></iconify-icon></button>
+              <button type="button" class="product-action-icon rounded-full border border-line p-item" :class="isCompared(currentProduct.id) ? 'is-active' : ''" @click="toggleCompare(currentProduct)" :aria-label="isCompared(currentProduct.id) ? 'Убрать из сравнения' : 'Добавить к сравнению'"><iconify-icon icon="fluent-mdl2:compare-uneven" width="21" height="21"></iconify-icon></button>
+             <button type="button" class="btn rounded-full bg-sky px-card py-item text-sm font-semibold text-white" @click="addToCart(currentProduct)">В корзину</button>
+             <a href="checkout.html" class="btn rounded-full border border-line px-card py-item text-sm font-medium text-ink" @click="addToCart(currentProduct)">Купить сейчас</a>
+           </div>
+           <dl class="product-quick-specs" aria-label="Основные параметры">
+             <div><dt>Производитель</dt><dd x-text="currentProduct.brand"></dd></div>
+             <div><dt>Площадь</dt><dd x-text="'до ' + currentProduct.area + ' м²'"></dd></div>
+             <div><dt>Компрессор</dt><dd x-text="currentProduct.inverter ? 'Инвертор' : 'On/off'"></dd></div>
+             <div><dt>Страна сборки</dt><dd x-text="currentProduct.country"></dd></div>
+           </dl>
+           <aside class="installation-promo" aria-label="Акция на монтаж">
+             <div class="installation-promo-mark">5<span>%</span></div>
+             <div class="installation-promo-copy"><p class="installation-promo-kicker">Техника + монтаж выгоднее</p><h2>Сохраним 5% на весь заказ</h2><p>Оформите установку вместе с кондиционером и получите скидку на оборудование. Без промокодов и скрытых условий.</p></div>
+             <div class="installation-promo-action"><strong x-text="'−' + formatPrice(Math.round(currentProduct.price * 0.05))"></strong><button type="button" @click="productTab = 'install'; document.getElementById('product-details')?.scrollIntoView({ behavior: 'smooth' })">Рассчитать монтаж <span aria-hidden="true">↗</span></button></div>
+           </aside>
           </div>
-          <dl class="mt-block divide-y divide-line border-y border-line text-sm">
-            <template x-for="row in specsOf(currentProduct)" :key="row[0]">
-              <div class="flex justify-between gap-item py-tight">
-                <dt class="text-mist" x-text="row[0]"></dt>
-                <dd class="text-right font-medium" x-text="row[1]"></dd>
-              </div>
-            </template>
-          </dl>
+      </div>
+    </section>
+    <section class="product-details surface-base border-t border-line bg-white" id="product-details">
+      <div class="page-x section-y mx-auto max-w-6xl">
+        <nav class="product-tabs" aria-label="Информация о товаре">
+          <button type="button" class="product-tab" :class="productTab === 'about' ? 'is-active' : ''" @click="productTab = 'about'">О товаре</button>
+          <button type="button" class="product-tab" :class="productTab === 'install' ? 'is-active' : ''" @click="productTab = 'install'">Монтаж</button>
+          <button type="button" class="product-tab" :class="productTab === 'delivery' ? 'is-active' : ''" @click="productTab = 'delivery'">Доставка</button>
+          <button type="button" class="product-tab" :class="productTab === 'warranty' ? 'is-active' : ''" @click="productTab = 'warranty'">Гарантия</button>
+        </nav>
+
+        <div class="product-tab-panel" x-show="productTab === 'about'" x-transition.opacity>
+          <div class="product-description max-w-3xl">
+            <p class="text-lg leading-relaxed">Настенная сплит-система <strong x-text="currentProduct.name"></strong> поддерживает комфортную температуру в помещении до <strong x-text="currentProduct.area + ' м²'"></strong>. Модель подходит для квартиры, кабинета или небольшой гостиной: быстро охлаждает воздух, работает в режиме обогрева и не требует сложного ухода.</p>
+            <p class="mt-card text-mist">Подберём подходящую мощность, аккуратно установим оборудование и объясним, как пользоваться всеми режимами. Перед покупкой можно уточнить наличие, сроки доставки и стоимость монтажа.</p>
+          </div>
+          <div class="mt-block grid gap-block lg:grid-cols-[minmax(0,1fr)_280px]">
+            <div>
+              <h2 class="font-display text-2xl font-semibold">Характеристики</h2>
+              <dl class="mt-card divide-y divide-line border-y border-line text-sm">
+                <template x-for="row in specsOf(currentProduct)" :key="row[0]">
+                  <div class="spec-row flex justify-between gap-item py-tight">
+                    <dt class="spec-tip text-mist" :data-tip="specTip(row[0])" tabindex="0" :aria-label="row[0] + ': ' + specTip(row[0])"><span x-text="row[0]"></span><iconify-icon class="spec-tip-icon" icon="solar:info-circle-linear" width="14" height="14" aria-hidden="true"></iconify-icon></dt>
+                    <dd class="text-right font-medium" x-text="row[1]"></dd>
+                  </div>
+                </template>
+              </dl>
+            </div>
+            <aside class="info-card self-start rounded-2xl bg-frost p-card">
+              <p class="text-xs uppercase tracking-[0.14em] text-sky">В комплекте</p>
+              <ul class="mt-item space-y-tight text-sm text-mist">
+                <li class="flex gap-tight"><span class="text-sky">✓</span> Внутренний блок</li>
+                <li class="flex gap-tight"><span class="text-sky">✓</span> Наружный блок</li>
+                <li class="flex gap-tight"><span class="text-sky">✓</span> Пульт управления</li>
+                <li class="flex gap-tight"><span class="text-sky">✓</span> Гарантия 3 года</li>
+              </ul>
+            </aside>
+          </div>
+        </div>
+
+        <div class="product-tab-panel" x-show="productTab === 'install'" x-transition.opacity x-cloak>
+          <div class="detail-intro"><p class="text-xs uppercase tracking-[0.14em] text-sky">Профессиональный монтаж</p><h2 class="mt-tight font-display text-3xl font-semibold">Установим кондиционер без лишних забот</h2><p class="mt-card max-w-2xl text-mist">Монтаж выполняют специалисты AeroClim. Согласуем удобное время, защитим интерьер и проверим работу оборудования после запуска.</p></div>
+          <div class="installation-calculator mt-block max-w-3xl rounded-2xl border border-line/80 bg-frost p-card sm:p-block">
+            <div class="flex flex-wrap items-start justify-between gap-card"><div><p class="text-xs uppercase tracking-[0.14em] text-sky">Предварительный расчёт</p><h3 class="mt-tight font-display text-2xl font-semibold">Сколько стоит монтаж?</h3><p class="mt-tight max-w-xl text-sm text-mist">Цена зависит от типа кондиционера и площади помещения. Точную стоимость подтвердим после оценки объекта.</p></div><div class="installation-total"><span>от</span><strong x-text="formatPrice(installationPrice())"></strong></div></div>
+            <div class="mt-block grid gap-item sm:grid-cols-2"><label class="installation-field"><span>Тип кондиционера</span><select x-model="installType"><template x-for="category in categories" :key="'install-' + category.slug"><option :value="category.slug" x-text="category.title"></option></template></select></label><label class="installation-field"><span>Площадь помещения</span><select x-model.number="installArea"><template x-for="size in installationAreas" :key="'area-' + size"><option :value="size" x-text="'до ' + size + ' м²'"></option></template></select></label></div>
+            <p class="mt-card text-xs text-mist">В расчёт включены стандартная установка, подключение и проверка оборудования.</p>
+          </div>
+          <div class="mt-block grid gap-item sm:grid-cols-3"><div class="service-card"><span class="service-number">01</span><h3>Подготовим место</h3><p>Определим расположение блоков и трассы с учётом интерьера.</p></div><div class="service-card"><span class="service-number">02</span><h3>Выполним монтаж</h3><p>Установим блоки, проложим трассу и аккуратно уберём рабочее место.</p></div><div class="service-card"><span class="service-number">03</span><h3>Проверим систему</h3><p>Проведём запуск, проверим герметичность и покажем основные режимы.</p></div></div>
+        </div>
+
+        <div class="product-tab-panel" x-show="productTab === 'delivery'" x-transition.opacity x-cloak>
+          <p class="text-xs uppercase tracking-[0.14em] text-sky">Доставка по Москве и области</p><h2 class="mt-tight font-display text-3xl font-semibold">Привезём технику в удобный день</h2><div class="mt-block grid max-w-3xl gap-item sm:grid-cols-2"><div class="service-card"><h3>По Москве</h3><p>Доставка до подъезда в согласованный двухчасовой интервал. Стоимость от 1 000 ₽.</p></div><div class="service-card"><h3>В область</h3><p>Рассчитаем стоимость по адресу и заранее сообщим срок прибытия.</p></div></div>
+        </div>
+
+        <div class="product-tab-panel" x-show="productTab === 'warranty'" x-transition.opacity x-cloak>
+          <p class="text-xs uppercase tracking-[0.14em] text-sky">Спокойствие после покупки</p><h2 class="mt-tight font-display text-3xl font-semibold">Гарантия 3 года</h2><p class="mt-card max-w-2xl text-mist">Гарантия распространяется на оборудование и работы по установке. Если возникнет вопрос, свяжитесь с нами: поможем диагностировать проблему и организуем сервис.</p><a href="contacts.html" class="btn mt-block inline-flex rounded-full bg-sky px-card py-item text-sm font-semibold text-white">Задать вопрос</a>
+        </div>
+      </div>
+    </section>
+    <section class="surface-base border-t border-line bg-paper">
+      <div class="page-x section-y mx-auto max-w-6xl">
+        <div class="flex flex-wrap items-end justify-between gap-item">
+          <div><p class="text-xs uppercase tracking-[0.14em] text-sky">Для комфортной установки</p><h2 class="mt-tight scroll-reveal font-display text-3xl font-semibold">Аксессуары</h2></div>
+          <a href="index.html#catalog" class="text-sm font-medium text-sky">Смотреть все</a>
+        </div>
+        <div class="mt-block grid gap-item sm:grid-cols-2 xl:grid-cols-4">
+          <template x-for="accessory in [{name: 'Монтажный комплект', text: 'Медная трасса и расходные материалы', price: 5500, icon: 'solar:settings-linear'}, {name: 'Козырёк для внешнего блока', text: 'Защита от осадков и снега', price: 2550, icon: 'solar:shield-check-linear'}, {name: 'Очиститель кондиционера', text: 'Уход за внутренним блоком', price: 890, icon: 'solar:magic-stick-3-linear'}, {name: 'Дренажная помпа', text: 'Отвод конденсата при сложном монтаже', price: 9196, icon: 'solar:water-drops-linear'}]" :key="accessory.name">
+            <article class="accessory-card rounded-2xl border border-line/80 bg-white p-card"><span class="accessory-icon"><iconify-icon :icon="accessory.icon" width="24" height="24"></iconify-icon></span><h3 class="mt-card font-medium" x-text="accessory.name"></h3><p class="mt-tight min-h-12 text-sm text-mist" x-text="accessory.text"></p><div class="mt-card flex items-center justify-between gap-tight"><strong x-text="formatPrice(accessory.price)"></strong><button type="button" class="accessory-add" @click="showToast('Аксессуар добавлен в корзину')" aria-label="Добавить аксессуар"><iconify-icon icon="solar:cart-plus-linear" width="20" height="20"></iconify-icon></button></div></article>
+          </template>
         </div>
       </div>
     </section>
@@ -123,9 +228,28 @@
           </template>
         </div>
       </div>
-    </section>
-  </main>
-  <footer class="surface-base border-t border-line bg-ink text-white">
+     </section>
+   </main>
+   <div x-show="productLightbox" x-cloak x-transition.opacity class="product-lightbox fixed inset-0 z-[100] flex items-center justify-center bg-ink/75 p-item sm:p-card" @click.self="closeProductLightbox()" @keydown.escape.window="closeProductLightbox()" @keydown.arrow-left.window="previousProductImage()" @keydown.arrow-right.window="nextProductImage()" role="dialog" aria-modal="true" :aria-label="'Галерея товара ' + currentProduct.name">
+     <div class="product-lightbox-panel relative grid h-[min(780px,calc(100vh-2rem))] w-full max-w-6xl grid-rows-[1fr_auto] overflow-hidden rounded-2xl bg-white shadow-floating sm:grid-cols-[112px_minmax(0,1fr)] sm:grid-rows-1">
+       <button type="button" class="product-lightbox-close absolute right-item top-item z-10 inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-2xl leading-none text-mist shadow-sm" @click="closeProductLightbox()" aria-label="Закрыть галерею">×</button>
+       <div class="product-lightbox-thumbs order-2 flex gap-tight overflow-x-auto border-t border-line bg-paper p-item sm:order-1 sm:flex-col sm:overflow-y-auto sm:overflow-x-hidden sm:border-r sm:border-t-0 sm:p-tight">
+         <template x-for="(image, index) in productGallery" :key="'lightbox-gallery-' + index">
+           <button type="button" class="product-lightbox-thumb shrink-0 overflow-hidden rounded-lg border bg-white p-1" :class="selectedProductImageIndex === index ? 'is-selected' : ''" @click="selectProductImage(index)" :aria-label="'Открыть фото ' + (index + 1)">
+             <img :src="image" :alt="currentProduct.name + ', фото ' + (index + 1)" class="h-full w-full object-contain" />
+           </button>
+         </template>
+       </div>
+       <div class="product-lightbox-stage relative order-1 flex min-h-0 items-center justify-center bg-white p-card sm:order-2 sm:p-block">
+         <img :src="productGallery[selectedProductImageIndex]" :alt="currentProduct.name + ', фото ' + (selectedProductImageIndex + 1)" class="max-h-full max-w-full object-contain" />
+         <div class="product-lightbox-navigation" aria-label="Навигация по фото">
+           <button type="button" class="product-lightbox-nav" @click.stop.prevent="previousProductImage()" aria-label="Предыдущее фото"><iconify-icon icon="solar:alt-arrow-up-linear" width="22" height="22"></iconify-icon></button>
+           <button type="button" class="product-lightbox-nav" @click.stop.prevent="nextProductImage()" aria-label="Следующее фото"><iconify-icon icon="solar:alt-arrow-down-linear" width="22" height="22"></iconify-icon></button>
+         </div>
+       </div>
+     </div>
+   </div>
+   <footer class="surface-base border-t border-line bg-ink text-white">
     <div class="page-x mx-auto grid max-w-6xl gap-block py-section md:grid-cols-3">
       <div>
         <p class="font-display text-2xl font-semibold tracking-display">AeroClim</p>
@@ -148,7 +272,7 @@
     </div>
     <div class="border-t border-white/10 px-item py-item text-center text-xs text-white/40 sm:px-card">AeroClim · климат уюта</div>
   </footer>
-  <script src="assets/store.js"></script>
+   <script src="assets/store.js?v=gallery-2"></script>
   <script src="assets/reveal.js"></script>
 </body>
 </html>

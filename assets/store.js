@@ -37,6 +37,8 @@
       const defaultCountry = (brand) => ({ Thaicon: 'Таиланд' }[brand] || 'Китай');
       const typeSlugs = ['nastennye', 'multisplit', 'mobilnye', 'kassetnye', 'kanalnye', 'kolonnye', 'heatpump', 'vrf'];
       const CART_KEY = 'aeroclim-cart';
+      const FAVORITES_KEY = 'aeroclim-favorites';
+      const COMPARE_KEY = 'aeroclim-compare';
 
       const enrich = (p) => ({
         ...p,
@@ -50,12 +52,23 @@
         cartOpen: false,
         quickView: null,
         mobileNav: false,
-        catalogOpen: false,
+         catalogOpen: false,
+         aboutOpen: false,
+          lightbox: null,
+         productLightbox: false,
+        supportOpen: false,
         checkoutStep: 1,
         checkoutDone: false,
         toast: '',
         pageType: '',
-        pageProductId: 0,
+         pageProductId: 0,
+         selectedProductImage: 'assets/images/gallery/ecoclima-01.jpg',
+         selectedProductImageIndex: 0,
+         galleryOverflow: false,
+         productTab: 'about',
+         installType: 'nastennye',
+         installArea: 20,
+         installationAreas: [20, 25, 35, 50],
         deliveryFee: 1000,
         filterBrand: '',
         filterSeries: '',
@@ -67,15 +80,21 @@
         filterWifi: '',
         filterCountry: '',
         activeQuick: 'all',
+        searchQuery: '',
         heroTip: '',
         heroTipX: 0,
         heroTipY: 0,
-        heroTipAbove: false,
+         heroTipAbove: false,
+         favoritePreview: false,
+         comparePreview: false,
         filtersOpen: false,
         modelListExpanded: false,
         modelTagsLimit: 6,
         order: { name: '', phone: '', address: '', install: true },
-        cart: [],
+         cart: [],
+         favorites: [],
+         compare: [],
+         selectedFavorites: [],
 
         quickFilters: [
           { id: 'all', label: 'Все', brand: '', area: '', inverter: '', tip: 'Все модели каталога без ограничений по типу компрессора и площади.' },
@@ -354,6 +373,18 @@
         get cartCount() {
           return this.cart.reduce((s, i) => s + i.qty, 0);
         },
+        get favoriteProducts() {
+          return this.favorites.map((id) => this.products.find((p) => p.id === id)).filter(Boolean);
+        },
+        get compareProducts() {
+          return this.compare.map((id) => this.products.find((p) => p.id === id)).filter(Boolean);
+        },
+        get favoriteCount() { return this.favorites.length; },
+        get compareCount() { return this.compare.length; },
+        get comparisonRows() {
+          const fields = this.specsOf(this.products[0]).map((row) => row[0]);
+          return fields.map((label) => [label, this.compareProducts.map((p) => this.specsOf(p).find((row) => row[0] === label)?.[1] || '—')]);
+        },
         get cartTotal() {
           return this.cart.reduce((s, i) => s + i.price * i.qty, 0);
         },
@@ -366,6 +397,14 @@
         get currentProduct() {
           return this.products.find((p) => p.id === this.pageProductId) || this.products[0];
         },
+        get productGallery() {
+          return [
+            'assets/images/gallery/ecoclima-01.jpg',
+            'assets/images/gallery/ecoclima-02.jpg',
+            'assets/images/gallery/ecoclima-03.jpg',
+            'assets/images/gallery/ecoclima-04.jpg',
+          ];
+        },
         get productCategory() {
           return this.categories.find((c) => c.slug === this.currentProduct.type) || this.categories[0];
         },
@@ -377,13 +416,59 @@
           const p = this.currentProduct;
           return this.products.filter((x) => x.id !== p.id && x.type === p.type).slice(0, 3);
         },
+        get searchResults() {
+          const query = this.searchQuery.trim().toLowerCase();
+          if (!query) return [];
+          return this.products.filter((p) => {
+            const haystack = [p.brand, p.name, p.series, this.typeTitle(p.type)].join(' ').toLowerCase();
+            return haystack.includes(query);
+          }).slice(0, 6);
+        },
 
         init() {
           const q = new URLSearchParams(location.search);
-          this.pageType = q.get('type') || '';
-          this.pageProductId = Number(q.get('id') || 0);
-          this.loadCart();
-          this.$watch('cart', () => this.persistCart());
+           this.pageType = q.get('type') || '';
+           this.pageProductId = Number(q.get('id') || 0);
+           this.installType = this.currentProduct.type;
+           this.installArea = this.currentProduct.area;
+           if (!this.installationAreas.includes(this.currentProduct.area)) this.installationAreas.push(this.currentProduct.area);
+           this.selectedProductImage = 'assets/images/gallery/ecoclima-01.jpg';
+           this.selectedProductImageIndex = 0;
+           this.$nextTick(() => this.updateGalleryOverflow());
+           window.addEventListener('resize', () => this.updateGalleryOverflow());
+           this.loadCart();
+           this.loadLists();
+          document.querySelectorAll('[x-show="supportOpen"]').forEach((menu) => {
+            const trigger = menu.parentElement;
+            if (!trigger) return;
+            trigger.classList.add('support-trigger');
+            menu.classList.add('support-dropdown');
+            menu.classList.remove('z-[60]');
+            menu.classList.add('z-[80]');
+            menu.querySelectorAll('a[href]').forEach((link) => {
+              const href = link.getAttribute('href') || '';
+              if (link.querySelector('iconify-icon, img')) return;
+              const icon = href.startsWith('tel:') || href.includes('t.me')
+                ? document.createElement('iconify-icon')
+                : document.createElement('img');
+              if (icon.tagName === 'ICONIFY-ICON') {
+                icon.setAttribute('icon', href.startsWith('tel:') ? 'solar:phone-calling-linear' : 'logos:telegram');
+                icon.setAttribute('width', '18');
+                icon.setAttribute('height', '18');
+              } else {
+                icon.setAttribute('src', 'assets/images/Max colored.svg');
+                icon.setAttribute('alt', '');
+                icon.className = 'h-[18px] w-[18px] shrink-0';
+              }
+              link.classList.add('flex', 'items-center', 'gap-item');
+              link.prepend(icon);
+            });
+            trigger.addEventListener('mouseenter', () => { this.supportOpen = true; });
+            trigger.addEventListener('mouseleave', () => { this.supportOpen = false; });
+          });
+           this.$watch('cart', () => this.persistCart());
+           this.$watch('favorites', () => this.persistLists());
+           this.$watch('compare', () => this.persistLists());
         },
         loadCart() {
           try {
@@ -399,6 +484,50 @@
         persistCart() {
           localStorage.setItem(CART_KEY, JSON.stringify(this.cart.map((i) => ({ id: i.id, qty: i.qty }))));
         },
+        loadLists() {
+          try {
+            const read = (key) => JSON.parse(localStorage.getItem(key) || '[]').map(Number).filter((id) => this.products.some((p) => p.id === id));
+            this.favorites = [...new Set(read(FAVORITES_KEY))];
+            this.compare = [...new Set(read(COMPARE_KEY))];
+          } catch {
+            this.favorites = [];
+            this.compare = [];
+          }
+        },
+        persistLists() {
+          localStorage.setItem(FAVORITES_KEY, JSON.stringify(this.favorites));
+          localStorage.setItem(COMPARE_KEY, JSON.stringify(this.compare));
+        },
+        isFavorite(id) { return this.favorites.includes(id); },
+        isCompared(id) { return this.compare.includes(id); },
+        toggleFavorite(p) {
+          this.favorites = this.isFavorite(p.id) ? this.favorites.filter((id) => id !== p.id) : [...this.favorites, p.id];
+          this.showToast(this.isFavorite(p.id) ? 'Добавлено в избранное' : 'Удалено из избранного');
+        },
+        toggleCompare(p) {
+          if (this.isCompared(p.id)) {
+            this.compare = this.compare.filter((id) => id !== p.id);
+            this.showToast('Убрано из сравнения');
+            return;
+          }
+          if (this.compare.length >= 4) {
+            this.showToast('В сравнении может быть до 4 моделей');
+            return;
+          }
+          this.compare = [...this.compare, p.id];
+          this.showToast('Добавлено к сравнению');
+        },
+        transferSelectedFavorites() {
+          this.favoriteProducts.filter((p) => this.selectedFavorites.includes(p.id)).forEach((p) => this.addToCart(p));
+          this.favorites = this.favorites.filter((id) => !this.selectedFavorites.includes(id));
+          this.selectedFavorites = [];
+          this.persistLists();
+        },
+        removeSelectedFavorites() {
+          this.favorites = this.favorites.filter((id) => !this.selectedFavorites.includes(id));
+          this.selectedFavorites = [];
+          this.persistLists();
+        },
         categoryHref(c) {
           return 'category.html?type=' + c.slug;
         },
@@ -410,8 +539,13 @@
         },
 
         formatPrice(n) {
-          return new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
-        },
+           return new Intl.NumberFormat('ru-RU').format(n) + ' ₽';
+         },
+         installationPrice() {
+           const base = { nastennye: 7000, multisplit: 15000, mobilnye: 2500, kassetnye: 18000, kanalnye: 22000, kolonnye: 16000, heatpump: 18000, vrf: 35000 }[this.installType] || 7000;
+           const area = Number(this.installArea) || 20;
+           return base + Math.max(0, Math.ceil((area - 20) / 10)) * 1500;
+         },
         specsOf(p) {
           return [
             ['Производитель', p.brand],
@@ -428,6 +562,23 @@
             ['Хладагент', p.refrigerant],
             ['Цвет', p.color],
           ];
+        },
+        specTip(label) {
+          return {
+            'Производитель': 'Бренд, под которым выпущена кондиционерная система.',
+            'Серия': 'Линейка моделей производителя с общим набором функций и дизайном.',
+            'Тип': 'Конструктивный тип оборудования и способ его установки.',
+            'Площадь': 'Рекомендуемая площадь помещения, которую кондиционер сможет охлаждать.',
+            'Компрессор': 'Тип регулирования мощности: инверторный работает плавно, on/off включается на полной мощности.',
+            'Охлаждение': 'Максимальная мощность охлаждения помещения.',
+            'Обогрев': 'Максимальная мощность обогрева помещения.',
+            'Шум внутр. блока': 'Уровень шума внутреннего блока во время работы.',
+            'Класс энергии': 'Энергоэффективность модели: чем выше класс, тем меньше потребление электричества.',
+            'Wi‑Fi': 'Возможность управлять кондиционером со смартфона по Wi‑Fi.',
+            'Страна сборки': 'Страна, где была произведена сборка оборудования.',
+            'Хладагент': 'Тип хладагента, который используется в контуре охлаждения.',
+            'Цвет': 'Цвет корпуса внутреннего блока.',
+          }[label] || 'Основная характеристика кондиционера.';
         },
         openQuick(p) {
           this.quickView = p;
@@ -511,6 +662,38 @@
           this.cartOpen = false;
           this.order = { name: '', phone: '', address: '', install: true };
           location.href = 'index.html';
+        },
+        scrollGallery(direction) {
+          document.getElementById('product-gallery-track')?.scrollBy({ left: direction * 120, behavior: 'smooth' });
+        },
+        openProductLightbox() {
+          this.productLightbox = true;
+          document.body.classList.add('lightbox-open');
+        },
+        closeProductLightbox() {
+          this.productLightbox = false;
+          document.body.classList.remove('lightbox-open');
+          document.querySelector('.product-main-image')?.blur();
+          document.activeElement?.blur();
+        },
+        selectProductImage(index) {
+          this.selectedProductImageIndex = index;
+          this.selectedProductImage = this.productGallery[index];
+        },
+        previousProductImage() {
+          this.changeProductImage(-1);
+        },
+        nextProductImage() {
+          this.changeProductImage(1);
+        },
+        changeProductImage(direction) {
+          if (!this.productGallery.length) return;
+          const index = (this.selectedProductImageIndex + direction + this.productGallery.length) % this.productGallery.length;
+          this.selectProductImage(index);
+        },
+        updateGalleryOverflow() {
+          const track = document.getElementById('product-gallery-track');
+          this.galleryOverflow = Boolean(track && track.scrollWidth > track.clientWidth + 1);
         },
         showToast(msg) {
           this.toast = msg;

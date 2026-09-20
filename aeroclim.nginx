@@ -1,0 +1,29 @@
+server {
+    listen 80;
+    listen [::]:80;
+    server_name aeroclim.localhost;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    listen [::]:443 ssl;
+    http2 on;
+    server_name aeroclim.localhost;
+
+    root /home/amristar/Dev/aeroclim;
+    index index.html;
+
+    ssl_certificate /home/amristar/.local/share/aeroclim-https/aeroclim.pem;
+    ssl_certificate_key /home/amristar/.local/share/aeroclim-https/aeroclim-key.pem;
+
+    client_max_body_size 64m;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+}

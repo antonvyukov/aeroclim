@@ -20,12 +20,24 @@
   <div class="grain" aria-hidden="true"></div>
 
   <!-- Top bar -->
-  <div class="surface-base border-b border-line/80 bg-white/70 backdrop-blur-sm">
+  <div class="support-bar surface-base relative z-[60] border-b border-line/80 bg-white/70 backdrop-blur-sm">
     <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-card py-tight text-sm text-mist">
       <p class="hidden sm:block">Ежедневно с 08:00 до 20:00 · Москва и МО</p>
       <p class="sm:hidden">08:00–20:00</p>
       <div class="flex items-center gap-item">
         <a href="tel:+78003026206" class="font-medium text-ink">8 (800) 302-62-06</a>
+        <div class="relative hidden sm:block">
+          <button type="button" class="inline-flex items-center gap-tight text-mist" @click="supportOpen = !supportOpen" @click.outside="supportOpen = false" :aria-expanded="supportOpen" aria-label="Поддержка 24/7">
+            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path stroke-linecap="round" d="M4 14v-2a8 8 0 0 1 16 0v2" /><path stroke-linecap="round" d="M4 14h2v4H4a2 2 0 0 1-2-2v0a2 2 0 0 1 2-2Zm16 0h-2v4h2a2 2 0 0 0 2-2v0a2 2 0 0 0-2-2Z" /><path stroke-linecap="round" d="M12 20h2" /></svg>
+            <span>24/7</span>
+          </button>
+          <div x-show="supportOpen" x-cloak x-transition.opacity class="support-dropdown surface-floating absolute right-0 top-full z-[80] mt-tight w-52 rounded-2xl border border-line/80 bg-white p-tight text-sm shadow-floating">
+            <p class="px-item py-tight font-medium text-ink">Свяжитесь с нами</p>
+            <a href="tel:+78003026206" class="flex items-center gap-item rounded-xl px-item py-tight text-mist hover:bg-frost"><iconify-icon icon="solar:phone-calling-linear" width="18" height="18"></iconify-icon><span>Обратный звонок</span></a>
+            <a href="https://t.me/aeroclim" class="flex items-center gap-item rounded-xl px-item py-tight text-mist hover:bg-frost"><iconify-icon icon="logos:telegram" width="18" height="18"></iconify-icon><span>Telegram</span></a>
+            <a href="https://max.ru/" class="flex items-center gap-item rounded-xl px-item py-tight text-mist hover:bg-frost"><img src="assets/images/Max colored.svg" alt="" class="h-[18px] w-[18px] shrink-0" /><span>Max</span></a>
+          </div>
+        </div>
         <a href="mailto:info@aeroclim.ru" class="hidden md:inline">info@aeroclim.ru</a>
       </div>
     </div>
@@ -34,10 +46,37 @@
   <!-- Header -->
   <header class="surface-floating sticky top-0 z-[40] border-b border-line/80 bg-white/85 backdrop-blur-md">
     <div class="page-x mx-auto flex max-w-6xl items-center justify-between gap-item py-item">
-      <a href="index.html" class="flex items-baseline gap-tight">
+      <a href="index.html" class="flex shrink-0 flex-col leading-none">
         <span class="font-display text-2xl font-semibold tracking-display text-ink">AeroClim</span>
-        <span class="hidden text-xs uppercase tracking-[0.18em] text-mist sm:inline">климатическая техника</span>
+        <span class="mt-1 text-[9px] uppercase tracking-[0.18em] text-mist">климатическая техника</span>
       </a>
+
+      <div class="relative hidden min-w-0 flex-1 md:block md:max-w-md">
+        <label class="sr-only" for="site-search">Поиск по каталогу</label>
+        <div class="search-field flex items-center rounded-full border border-line bg-paper/70 px-item py-tight text-mist">
+          <svg class="mr-tight h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path stroke-linecap="round" d="m16 16 4 4" />
+          </svg>
+          <input id="site-search" type="search" x-model="searchQuery" placeholder="Что вы ищите?" class="w-full bg-transparent text-sm text-ink outline-none placeholder:text-mist/70" autocomplete="off" />
+        </div>
+        <div x-show="searchQuery.trim()" x-cloak @click.outside="searchQuery = ''" class="surface-floating absolute left-0 right-0 top-full z-[60] mt-tight overflow-hidden rounded-2xl border border-line/80 bg-white shadow-floating">
+          <template x-if="searchResults.length">
+            <div>
+              <template x-for="p in searchResults" :key="'search-'+p.id">
+                <a :href="productHref(p)" class="flex items-center gap-item border-b border-line/60 px-item py-tight last:border-0 hover:bg-frost">
+                  <img :src="p.img" :alt="p.name" class="h-10 w-10 shrink-0 rounded-lg bg-paper object-contain" />
+                  <span class="min-w-0 flex-1">
+                    <span class="block truncate text-sm font-medium text-ink" x-text="p.name"></span>
+                    <span class="block text-xs text-mist" x-text="'до ' + p.area + ' м² · ' + formatPrice(p.price)"></span>
+                  </span>
+                </a>
+              </template>
+            </div>
+          </template>
+          <p x-show="!searchResults.length" class="px-item py-card text-sm text-mist">Ничего не найдено</p>
+        </div>
+      </div>
 
       <nav class="hidden items-center gap-card text-sm font-medium text-mist md:flex">
         <div class="relative" @mouseenter="catalogOpen = true" @mouseleave="catalogOpen = false">
@@ -51,28 +90,24 @@
             </div>
           </div>
         </div>
-        <a href="about.html">О магазине</a>
+        <div class="relative" @mouseenter="aboutOpen = true" @mouseleave="aboutOpen = false"><a href="about.html" class="nav-keep inline-flex items-center gap-1">О магазине <span aria-hidden="true">▾</span></a><div class="absolute left-0 top-full z-[50] pt-tight" x-show="aboutOpen" x-cloak><div class="nav-drop min-w-[190px] rounded-2xl border border-line/80 bg-white p-tight shadow-floating"><a href="about.html" class="block rounded-xl px-item py-tight">О магазине</a><a href="works.html" class="block rounded-xl px-item py-tight text-ink">Наши работы</a></div></div></div>
         <a href="delivery.html">Доставка</a>
         <a href="contacts.html">Контакты</a>
       </nav>
 
-      <div class="flex items-center gap-tight">
-        <div class="relative">
-        <a
-          href="cart.html"
-          class="btn inline-flex items-center gap-tight rounded-full bg-sky px-item py-tight text-sm font-medium text-white"
-        >
-          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M3.5 4.5h1.8l1.4 10.2h10.6l1.5-7.2H7.2" />
-            <circle cx="9.2" cy="18.5" r="1.2" />
-            <circle cx="16.2" cy="18.5" r="1.2" />
-          </svg>
-          <span class="hidden sm:inline">Корзина</span>
-          <span
-            class="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-white/20 px-1.5 text-xs"
-            x-text="cartCount"
-          ></span>
-        </a>
+       <div class="header-actions flex items-center gap-tight">
+         <a href="favorites.html" class="header-action group" @mouseenter="favoritePreview = true" @mouseleave="favoritePreview = false" @focus="favoritePreview = true" @blur="favoritePreview = false">
+           <span class="header-action-icon"><iconify-icon icon="solar:heart-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="favoriteCount" x-text="favoriteCount"></span></span><span>Избранное</span>
+            <span class="header-preview" x-show="favoritePreview" x-cloak><template x-if="favoriteProducts.length"><template x-for="p in favoriteProducts.slice(0, 3)" :key="'fav-preview-'+p.id"><span class="header-preview-item"><img :src="p.img" :alt="p.name"><span x-text="p.name"></span></span></template></template><span class="header-preview-empty" x-show="!favoriteProducts.length">Список пока пуст</span></span>
+         </a>
+         <a href="compare.html" class="header-action group" @mouseenter="comparePreview = true" @mouseleave="comparePreview = false" @focus="comparePreview = true" @blur="comparePreview = false">
+           <span class="header-action-icon"><iconify-icon icon="solar:sort-horizontal-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="compareCount" x-text="compareCount"></span></span><span>Сравнить</span>
+            <span class="header-preview" x-show="comparePreview" x-cloak><template x-if="compareProducts.length"><template x-for="p in compareProducts.slice(0, 3)" :key="'compare-preview-'+p.id"><span class="header-preview-item"><img :src="p.img" :alt="p.name"><span x-text="p.name"></span></span></template></template><span class="header-preview-empty" x-show="!compareProducts.length">Список пока пуст</span></span>
+         </a>
+         <div class="relative">
+         <a href="cart.html" class="header-cart" aria-label="Корзина">
+           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M3.5 4.5h1.8l1.4 10.2h10.6l1.5-7.2H7.2" /><circle cx="9.2" cy="18.5" r="1.2" /><circle cx="16.2" cy="18.5" r="1.2" /></svg><span class="header-action-count" x-text="cartCount"></span>
+         </a>
         <div
           class="surface-floating absolute right-0 top-full z-[50] mt-tight whitespace-nowrap rounded-full bg-ink px-item py-tight text-sm text-white"
           x-show="toast"
@@ -80,7 +115,7 @@
           x-transition.opacity
           x-text="toast"
         ></div>
-        </div>
+         </div>
         <button
           type="button"
           class="rounded-full border border-line p-tight text-ink md:hidden"
@@ -91,6 +126,31 @@
             <path stroke-linecap="round" d="M4 7h16M4 12h16M4 17h16" />
           </svg>
         </button>
+      </div>
+    </div>
+    <div class="page-x pb-item md:hidden">
+      <div class="relative">
+        <label class="sr-only" for="site-search-mobile">Поиск по каталогу</label>
+        <div class="search-field flex items-center rounded-full border border-line bg-paper/70 px-item py-tight text-mist">
+          <svg class="mr-tight h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+            <circle cx="11" cy="11" r="6.5" />
+            <path stroke-linecap="round" d="m16 16 4 4" />
+          </svg>
+          <input id="site-search-mobile" type="search" x-model="searchQuery" placeholder="Что вы ищите?" class="w-full bg-transparent text-sm text-ink outline-none placeholder:text-mist/70" autocomplete="off" />
+        </div>
+        <div x-show="searchQuery.trim()" x-cloak class="surface-floating absolute left-0 right-0 top-full z-[60] mt-tight overflow-hidden rounded-2xl border border-line/80 bg-white shadow-floating">
+          <template x-if="searchResults.length">
+            <div>
+              <template x-for="p in searchResults" :key="'mobile-search-'+p.id">
+                <a :href="productHref(p)" class="flex items-center gap-item border-b border-line/60 px-item py-tight last:border-0 hover:bg-frost">
+                  <img :src="p.img" :alt="p.name" class="h-10 w-10 shrink-0 rounded-lg bg-paper object-contain" />
+                  <span class="min-w-0 flex-1"><span class="block truncate text-sm font-medium text-ink" x-text="p.name"></span><span class="block text-xs text-mist" x-text="'до ' + p.area + ' м² · ' + formatPrice(p.price)"></span></span>
+                </a>
+              </template>
+            </div>
+          </template>
+          <p x-show="!searchResults.length" class="px-item py-card text-sm text-mist">Ничего не найдено</p>
+        </div>
       </div>
     </div>
     <div
@@ -105,70 +165,72 @@
           <a :href="categoryHref(c)" class="text-mist" @click="mobileNav = false" x-text="c.title"></a>
         </template>
         <a href="about.html" @click="mobileNav = false">О магазине</a>
+        <a href="works.html" class="pl-item text-sky" @click="mobileNav = false">Наши работы</a>
         <a href="delivery.html" @click="mobileNav = false">Доставка</a>
         <a href="contacts.html" @click="mobileNav = false">Контакты</a>
-        <a href="cart.html" @click="mobileNav = false">Корзина</a>
+         <a href="favorites.html" @click="mobileNav = false">Избранное</a>
+         <a href="compare.html" @click="mobileNav = false">Сравнить</a>
       </nav>
     </div>
   </header>
 
   <main>
     <!-- Hero -->
-    <section class="relative overflow-hidden">
+    <section class="hero relative overflow-hidden">
       <div class="absolute inset-0">
         <img
           src="hero-living.jpg"
           alt="Светлая гостиная с настенным кондиционером"
-          class="h-full w-full object-cover object-[center_40%] lg:object-[center_58%]"
+          class="h-full w-full object-cover object-center"
         />
         <div
           class="absolute inset-0"
           style="background:
-            radial-gradient(90% 80% at 8% 50%, rgba(255,255,255,0.94), transparent 62%),
-            radial-gradient(70% 70% at 40% 90%, rgba(244,247,251,0.55), transparent 58%),
-            radial-gradient(50% 50% at 0% 0%, rgba(26,111,181,0.10), transparent 50%);"
+            linear-gradient(180deg, rgba(255,255,255,0.02) 0%, transparent 42%, rgba(18,24,31,0.12) 100%),
+            linear-gradient(90deg, rgba(255,255,255,0.16) 0%, transparent 55%);"
         ></div>
       </div>
 
-      <div class="page-x relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center py-section sm:min-h-[72vh]">
-        <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">AeroClim · климат уюта</p>
-        <h1 class="fade-up fade-up-delay mt-item max-w-xl font-display text-4xl font-semibold text-ink sm:text-6xl">
-          Свежий климат — каждый день
-        </h1>
-        <p class="fade-up fade-up-delay-2 mt-card max-w-md text-base text-mist sm:text-lg">
-          Кондиционеры и сплит-системы с установкой в Москве и Московской области. Подбор, доставка и монтаж — с гарантией на работы и оборудование до 36 месяцев (на отдельные модели — до 5 лет).
-        </p>
-        <div class="fade-up fade-up-delay-2 mt-block flex flex-wrap gap-tight">
-          <a
-            href="#catalog"
-            class="btn rounded-full bg-sky px-card py-item text-sm font-semibold text-white"
-          >
-            Смотреть каталог
-          </a>
-          <a
-            href="#categories"
-            class="btn rounded-full border border-sky/30 bg-white/70 px-card py-item text-sm font-medium text-ink backdrop-blur-sm"
-          >
-            Выбрать тип
-          </a>
-        </div>
-        <div class="fade-up fade-up-delay-2 relative mt-card" @mouseleave="hideHeroTip()">
-          <div class="flex flex-nowrap gap-tight overflow-x-auto pb-tight">
-            <template x-for="chip in quickFilters" :key="chip.id">
-              <button
-                type="button"
-                class="chip shrink-0 rounded-full px-item py-tight text-sm backdrop-blur-sm"
-                :class="activeQuick === chip.id
-                  ? 'is-on bg-ink text-white'
-                  : 'bg-white/70 text-mist'"
-                @mouseenter="showHeroTip($event, chip.tip)"
-                @focus="showHeroTip($event, chip.tip)"
-                @blur="hideHeroTip()"
-                @click="applyQuick(chip)"
-                x-text="chip.label"
-              ></button>
-            </template>
+      <div class="page-x relative mx-auto flex min-h-[96vh] max-w-6xl flex-col justify-center py-section sm:min-h-[96vh]">
+        <div class="hero-copy max-w-xl rounded-[1.6rem] border border-white/70 bg-white/70 p-8 shadow-[0_18px_50px_rgba(18,24,31,0.12)] backdrop-blur-md sm:p-10">
+          <p class="fade-up text-xs font-semibold uppercase tracking-[0.2em] text-sky">AeroClim · климат уюта</p>
+          <h1 class="fade-up fade-up-delay mt-item max-w-xl font-display text-4xl font-semibold text-ink sm:text-6xl">
+            Свежий климат — каждый день
+          </h1>
+          <p class="fade-up fade-up-delay-2 mt-card max-w-md text-base text-mist sm:text-lg">
+            Кондиционеры и сплит-системы с установкой в Москве и Московской области. Подбор, доставка и монтаж — с гарантией на работы и оборудование до 36 месяцев (на отдельные модели — до 5 лет).
+          </p>
+          <div class="fade-up fade-up-delay-2 mt-block flex flex-wrap gap-tight">
+            <a
+              href="#catalog"
+              class="btn rounded-full bg-sky px-card py-item text-sm font-semibold text-white"
+            >
+              Смотреть каталог
+            </a>
+            <a
+              href="#categories"
+              class="btn rounded-full border border-sky/30 bg-white/70 px-card py-item text-sm font-medium text-ink backdrop-blur-sm"
+            >
+              Выбрать тип
+            </a>
           </div>
+          <div class="fade-up fade-up-delay-2 relative mt-card" @mouseleave="hideHeroTip()">
+            <div class="hero-filters grid grid-cols-3 gap-tight">
+              <template x-for="chip in quickFilters" :key="chip.id">
+                <button
+                  type="button"
+                  class="chip w-full whitespace-nowrap rounded-full px-2 py-tight text-xs backdrop-blur-sm sm:px-item sm:text-sm"
+                  :class="activeQuick === chip.id
+                    ? 'is-on bg-ink text-white'
+                    : 'bg-white/70 text-mist'"
+                  @mouseenter="showHeroTip($event, chip.tip)"
+                  @focus="showHeroTip($event, chip.tip)"
+                  @blur="hideHeroTip()"
+                  @click="applyQuick(chip)"
+                  x-text="chip.label"
+                ></button>
+              </template>
+            </div>
           <template x-teleport="body">
             <div
               x-show="heroTip"
@@ -180,6 +242,7 @@
               x-text="heroTip"
             ></div>
           </template>
+          </div>
         </div>
       </div>
     </section>
@@ -436,10 +499,6 @@
                     <a :href="productHref(p)" class="block h-full w-full">
                       <img :src="p.img" :alt="p.name" class="media-zoom h-full w-full object-contain px-item py-tight" loading="lazy" />
                     </a>
-                    <span
-                      x-show="p.inverter"
-                      class="absolute left-3 top-3 rounded-full bg-frost px-tight py-1 text-xs font-medium text-sky-dark"
-                    >Инвертор</span>
                     <button
                       type="button"
                       class="btn absolute right-3 top-3 z-[10] inline-flex items-center gap-1.5 rounded-full bg-white/90 px-tight py-1.5 text-xs font-medium text-ink backdrop-blur-sm"
@@ -448,6 +507,10 @@
                       <iconify-icon icon="solar:eye-bold-duotone" class="text-sky" width="16" height="16"></iconify-icon>
                       <span class="hidden sm:inline">Обзор</span>
                     </button>
+                    <div class="absolute left-3 top-3 z-[10] flex gap-1">
+                      <button type="button" class="product-action-icon p-tight" :class="isFavorite(p.id) ? 'is-active' : ''" @click="toggleFavorite(p)" :aria-label="isFavorite(p.id) ? 'Убрать из избранного' : 'Добавить в избранное'"><iconify-icon :icon="isFavorite(p.id) ? 'solar:heart-bold' : 'solar:heart-linear'" width="18" height="18"></iconify-icon></button>
+                      <button type="button" class="product-action-icon p-tight" :class="isCompared(p.id) ? 'is-active' : ''" @click="toggleCompare(p)" :aria-label="isCompared(p.id) ? 'Убрать из сравнения' : 'Добавить к сравнению'"><iconify-icon icon="fluent-mdl2:compare-uneven" width="18" height="18"></iconify-icon></button>
+                    </div>
                   </div>
                   <div class="flex flex-1 flex-col bg-paper p-card">
                     <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="p.brand"></p>
@@ -787,10 +850,10 @@
 
       <template x-if="quickView">
         <div class="grid min-h-0 flex-1 overflow-y-auto md:grid-cols-2">
-          <div class="flex items-center justify-center bg-paper p-card">
+           <div class="flex items-center justify-center bg-white p-card">
             <img :src="quickView.img" :alt="quickView.name" class="max-h-64 w-full object-contain md:max-h-80" />
           </div>
-          <div class="flex flex-col p-card">
+           <div class="flex flex-col bg-frost p-card">
             <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="quickView.brand"></p>
             <h3 class="mt-tight text-xl font-medium leading-snug" x-text="quickView.name"></h3>
             <p class="mt-item text-2xl font-semibold tabular-nums" x-text="formatPrice(quickView.price)"></p>
@@ -798,7 +861,7 @@
             <dl class="mt-block divide-y divide-line border-y border-line text-sm">
               <template x-for="row in specsOf(quickView)" :key="row[0]">
                 <div class="flex justify-between gap-item py-tight">
-                  <dt class="text-mist" x-text="row[0]"></dt>
+                   <dt class="spec-tip text-mist" :data-tip="specTip(row[0])" tabindex="0" :aria-label="row[0] + ': ' + specTip(row[0])"><span x-text="row[0]"></span><iconify-icon class="spec-tip-icon" icon="solar:info-circle-linear" width="14" height="14" aria-hidden="true"></iconify-icon></dt>
                   <dd class="text-right font-medium" x-text="row[1]"></dd>
                 </div>
               </template>
