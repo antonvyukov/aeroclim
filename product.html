@@ -218,7 +218,7 @@
         <div class="mt-block grid gap-item sm:grid-cols-2 xl:grid-cols-3">
           <template x-for="p in relatedProducts" :key="p.id">
             <a :href="productHref(p)" class="card-lift overflow-hidden rounded-2xl border border-line/80 bg-white">
-              <div class="aspect-[3/2] bg-white"><img :src="p.img" :alt="p.name" class="h-full w-full object-contain px-item py-tight" /></div>
+              <div class="product-image-surface aspect-[3/2] bg-white"><img :src="p.img" :alt="p.name" class="h-full w-full object-contain px-item py-tight" /></div>
               <div class="bg-paper p-card">
                 <p class="text-xs uppercase text-mist" x-text="p.brand"></p>
                 <h3 class="mt-tight font-medium" x-text="p.name"></h3>
