@@ -513,7 +513,7 @@
                       <button type="button" class="product-action-icon p-tight" :class="isCompared(p.id) ? 'is-active' : ''" @click="toggleCompare(p)" :aria-label="isCompared(p.id) ? 'Убрать из сравнения' : 'Добавить к сравнению'"><iconify-icon icon="fluent-mdl2:compare-uneven" width="18" height="18"></iconify-icon></button>
                     </div>
                   </div>
-                  <div class="flex flex-1 flex-col bg-paper p-card">
+                  <div class="catalog-product-info flex flex-1 flex-col bg-paper p-card">
                     <p class="text-xs uppercase tracking-[0.14em] text-mist" x-text="p.brand"></p>
                     <a :href="productHref(p)" class="mt-tight text-left">
                       <h3 class="text-base font-medium leading-snug" x-text="p.name"></h3>
@@ -523,7 +523,7 @@
                       <p class="text-lg font-semibold tabular-nums" x-text="formatPrice(p.price)"></p>
                       <button
                         type="button"
-                        class="btn rounded-full bg-sky px-item py-tight text-sm font-medium text-white"
+                        class="catalog-buy-button btn rounded-full bg-sky px-item py-tight text-sm font-medium text-white"
                         @click="addToCart(p)"
                       >
                         В корзину

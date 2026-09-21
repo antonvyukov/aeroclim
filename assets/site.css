@@ -77,6 +77,8 @@
      .installation-field select { border-color: #d9ad68; }
      .hero-copy { background: rgba(35,31,28,.68) !important; border-color: rgba(247,243,237,.24) !important; }
      .product-image-surface { background-color: #fff !important; }
+      .catalog-product-info { background-color: #3b342e !important; }
+      .catalog-buy-button { background-color: rgba(169, 120, 59, 0.86) !important; color: #f7f3ed !important; }
       .hero-copy a[href="#catalog"] {
         border: 1px solid rgba(217,173,104,.72);
       }
@@ -264,7 +266,8 @@
     }
 
     .cat-label-glass {
-      background: rgba(26, 111, 181, 0.72);
+      background: rgba(169, 120, 59, 0.86);
+      color: #f7f3ed !important;
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       box-shadow: 0 4px 12px rgba(18, 24, 31, 0.16);
