@@ -95,7 +95,8 @@
         <a href="contacts.html">Контакты</a>
       </nav>
 
-       <div class="header-actions flex items-center gap-tight">
+        <div class="header-actions flex items-center gap-tight">
+          <button type="button" class="theme-toggle" @click="toggleTheme" :aria-label="theme === 'dark' ? 'Включить белую тему' : 'Включить тёмную тему'" :title="theme === 'dark' ? 'Белая тема' : 'Тёмная тема'"><iconify-icon x-show="theme === 'dark'" icon="solar:sun-2-linear" width="20" height="20"></iconify-icon><iconify-icon x-show="theme === 'light'" icon="solar:moon-linear" width="20" height="20"></iconify-icon></button>
          <a href="favorites.html" class="header-action group" @mouseenter="favoritePreview = true" @mouseleave="favoritePreview = false" @focus="favoritePreview = true" @blur="favoritePreview = false">
            <span class="header-action-icon"><iconify-icon icon="solar:heart-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="favoriteCount" x-text="favoriteCount"></span></span><span>Избранное</span>
             <span class="header-preview" x-show="favoritePreview" x-cloak><template x-if="favoriteProducts.length"><template x-for="p in favoriteProducts.slice(0, 3)" :key="'fav-preview-'+p.id"><span class="header-preview-item"><img :src="p.img" :alt="p.name"><span x-text="p.name"></span></span></template></template><span class="header-preview-empty" x-show="!favoriteProducts.length">Список пока пуст</span></span>

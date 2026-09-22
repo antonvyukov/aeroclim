@@ -39,6 +39,7 @@
       const CART_KEY = 'aeroclim-cart';
       const FAVORITES_KEY = 'aeroclim-favorites';
       const COMPARE_KEY = 'aeroclim-compare';
+      const THEME_KEY = 'aeroclim-theme';
 
       const enrich = (p) => ({
         ...p,
@@ -87,6 +88,7 @@
          heroTipAbove: false,
          favoritePreview: false,
          comparePreview: false,
+         theme: localStorage.getItem(THEME_KEY) || 'dark',
         filtersOpen: false,
         modelListExpanded: false,
         modelTagsLimit: 6,
@@ -425,7 +427,19 @@
           }).slice(0, 6);
         },
 
-        init() {
+         init() {
+           this.applyTheme();
+           document.querySelectorAll('.header-actions').forEach((actions) => {
+             if (actions.querySelector('.theme-toggle')) return;
+             const button = document.createElement('button');
+             button.type = 'button';
+             button.className = 'theme-toggle';
+             button.setAttribute('aria-label', this.theme === 'dark' ? 'Включить белую тему' : 'Включить тёмную тему');
+             button.title = this.theme === 'dark' ? 'Белая тема' : 'Тёмная тема';
+             button.innerHTML = `<iconify-icon icon="solar:${this.theme === 'dark' ? 'sun-2' : 'moon'}-linear" width="20" height="20"></iconify-icon>`;
+             button.addEventListener('click', () => this.toggleTheme());
+             actions.prepend(button);
+           });
           const q = new URLSearchParams(location.search);
            this.pageType = q.get('type') || '';
            this.pageProductId = Number(q.get('id') || 0);
@@ -469,7 +483,21 @@
            this.$watch('cart', () => this.persistCart());
            this.$watch('favorites', () => this.persistLists());
            this.$watch('compare', () => this.persistLists());
-        },
+           this.$watch('theme', () => this.applyTheme());
+         },
+         applyTheme() {
+           document.documentElement.dataset.theme = this.theme;
+           localStorage.setItem(THEME_KEY, this.theme);
+           document.querySelectorAll('.theme-toggle').forEach((button) => {
+             button.setAttribute('aria-label', this.theme === 'dark' ? 'Включить белую тему' : 'Включить тёмную тему');
+             button.title = this.theme === 'dark' ? 'Белая тема' : 'Тёмная тема';
+             const icon = button.querySelector('iconify-icon');
+             if (icon) icon.setAttribute('icon', `solar:${this.theme === 'dark' ? 'sun-2' : 'moon'}-linear`);
+           });
+         },
+         toggleTheme() {
+           this.theme = this.theme === 'dark' ? 'light' : 'dark';
+         },
         loadCart() {
           try {
             const raw = JSON.parse(localStorage.getItem(CART_KEY) || '[]');

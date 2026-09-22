@@ -60,7 +60,8 @@
         <a href="delivery.html">Доставка</a>
         <a href="contacts.html">Контакты</a>
       </nav>
-       <div class="header-actions flex items-center gap-tight">
+        <div class="header-actions flex items-center gap-tight">
+          <button type="button" class="theme-toggle" @click="toggleTheme" :aria-label="theme === 'dark' ? 'Включить белую тему' : 'Включить тёмную тему'" :title="theme === 'dark' ? 'Белая тема' : 'Тёмная тема'"><iconify-icon x-show="theme === 'dark'" icon="solar:sun-2-linear" width="20" height="20"></iconify-icon><iconify-icon x-show="theme === 'light'" icon="solar:moon-linear" width="20" height="20"></iconify-icon></button>
          <a href="favorites.html" class="header-action"><span class="header-action-icon"><iconify-icon icon="solar:heart-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="favoriteCount" x-text="favoriteCount"></span></span><span>Избранное</span></a>
          <a href="compare.html" class="header-action"><span class="header-action-icon"><iconify-icon icon="solar:sort-horizontal-linear" width="21" height="21"></iconify-icon><span class="header-action-count" x-show="compareCount" x-text="compareCount"></span></span><span>Сравнить</span></a>
         <div class="relative">
