@@ -258,9 +258,18 @@
       [data-theme="light"] .hero-copy > p.text-white\/70 { color: rgba(23,20,18,.72) !important; }
       [data-theme="light"] .hero-copy .chip { border-color: rgba(169,120,59,.42); }
       [data-theme="light"] .hero-copy .chip:not(.hero-all-chip) { background-color: #e2b66f !important; color: #171412 !important; }
-     [data-theme="light"] .hero-copy a[href="#catalog"],
-     [data-theme="light"] .hero-copy .hero-all-chip { background-color: #171412 !important; color: #fff !important; }
-     [data-theme="light"] .catalog-product-info { background-color: #fff !important; }
+      [data-theme="light"] .hero-copy a[href="#catalog"],
+      [data-theme="light"] .hero-copy .hero-all-chip { background-color: #171412 !important; color: #fff !important; }
+      [data-theme="light"] footer.bg-ink,
+      [data-theme="light"] footer.surface-base { background: #28231f !important; border-color: rgba(247,243,237,.16) !important; color: #f7f3ed !important; }
+      [data-theme="light"] footer.bg-ink .text-white,
+      [data-theme="light"] footer.surface-base .text-white { color: #f7f3ed !important; }
+      [data-theme="light"] footer.bg-ink .text-white\/60,
+      [data-theme="light"] footer.bg-ink .text-white\/70,
+      [data-theme="light"] footer.surface-base .text-white\/60,
+      [data-theme="light"] footer.surface-base .text-white\/70 { color: rgba(247,243,237,.72) !important; }
+      [data-theme="light"] footer a:hover { color: #ebc98e !important; opacity: 1; }
+      [data-theme="light"] .catalog-product-info { background-color: #fff !important; }
      [data-theme="light"] .product-quick-specs dt,
      [data-theme="light"] .spec-row dt { color: rgba(23,20,18,.62); }
      [data-theme="light"] .spec-row dd { color: #171412; }
