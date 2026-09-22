@@ -310,10 +310,14 @@
     .chip.is-on { opacity: 1; }
     .chip.is-on:hover { opacity: 0.92; }
 
-    .card-lift {
-      transition: transform 0.28s var(--ease-spring), opacity 0.28s var(--ease-spring);
-    }
-    .card-lift:hover { transform: translateY(-4px); opacity: 1; }
+     .card-lift {
+       transition: transform 0.28s var(--ease-spring), opacity 0.28s var(--ease-spring);
+     }
+     .card-lift:hover { transform: translateY(-4px); opacity: 1; }
+     .catalog-preview-button { color: #fff !important; opacity: 0; pointer-events: none; transform: translateY(-6px); transition: opacity .22s ease, transform .22s var(--ease-spring), background-color .22s ease; }
+     .group:hover .catalog-preview-button,
+     .catalog-preview-button:focus-visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+     .catalog-preview-button:hover { background-color: #a9783b !important; opacity: 1; }
 
     .fade-up {
       animation: fadeUp 1.25s var(--ease-reveal) both;
